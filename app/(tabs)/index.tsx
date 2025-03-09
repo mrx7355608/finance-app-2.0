@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, FlatList, SafeAreaView, StatusBar } from "react-native";
 import AnimalRecordsItem from "@/components/animal-records/animal-records-item";
+import DeleteConfirmationModal from "@/components/animal-records/delete-confirmation-modal";
 
 // Mock data for demonstration
 const initialRecords = [
@@ -32,6 +33,8 @@ const initialRecords = [
 
 export default function AnimalRecordsHome() {
   const [records, setRecords] = useState(initialRecords);
+  const [recordToDelete, setRecordToDelete] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleView = (item) => {
     console.log("Viewing record:", item.id);
@@ -45,8 +48,8 @@ export default function AnimalRecordsHome() {
 
   const handleDelete = (item) => {
     console.log("Deleting record:", item.id);
-    // Show confirmation dialog and delete if confirmed
-    setRecords(records.filter((record) => record.id !== item.id));
+    setIsModalVisible(true);
+    setRecordToDelete(item);
   };
 
   return (
@@ -65,6 +68,16 @@ export default function AnimalRecordsHome() {
           />
         )}
         contentContainerStyle={styles.list}
+      />
+      <DeleteConfirmationModal
+        visible={isModalVisible}
+        record={records[0]}
+        onClose={() => setIsModalVisible(false)}
+        onConfirm={() => {
+          setRecords(
+            records.filter((record) => record.id !== recordToDelete.id),
+          );
+        }}
       />
     </SafeAreaView>
   );
