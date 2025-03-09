@@ -1,11 +1,12 @@
 import { StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
+import AddRecordForm from "@/components/animal-records/animal-record-form";
 
 export default function AddRecordsPage() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add records tab</Text>
+      <AddRecordForm />
     </View>
   );
 }
