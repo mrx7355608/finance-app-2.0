@@ -1,4 +1,5 @@
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite";
 
-export const db = drizzle("file:local.db");
+const expo = openDatabaseSync("db.db");
+export const db = drizzle(expo);

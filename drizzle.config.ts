@@ -1,11 +1,8 @@
-import "dotenv/config";
-import { defineConfig } from "drizzle-kit";
+import type { Config } from "drizzle-kit";
 
-export default defineConfig({
+export default {
+  schema: "./utils/models.ts",
   out: "./drizzle",
-  schema: "./src/db/schema.ts",
   dialect: "sqlite",
-  dbCredentials: {
-    url: "file:local.db",
-  },
-});
+  driver: "expo", // <--- very important
+} satisfies Config;
