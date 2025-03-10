@@ -7,23 +7,37 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
+  TextInputChangeEventData,
+  NativeSyntheticEvent,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "./image-picker";
 import ExpenseModal from "../expenses/expenses-modal";
 import ExpensesList from "../expenses/expenses-list";
 import styles from "./styles";
+import { createRecord } from "@/utils/records-data";
 
 export default function AddRecordForm() {
   const [name, setName] = useState("");
   const [boughtPrice, setBoughtPrice] = useState("");
   const [soldPrice, setSoldPrice] = useState("");
-  const [imageUri, setImageUri] = useState(null);
+  const [imageUri, setImageUri] = useState<string>("");
   const [expenses, setExpenses] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleImageSelected = (uri) => {
+  const handleImageSelected = (uri: string) => {
     setImageUri(uri);
+  };
+
+  const saveRecord = async () => {
+    const data = {
+      name,
+      sold_price: Number(soldPrice),
+      bought_price: Number(boughtPrice),
+      image: imageUri,
+      createdAt: new Date().toISOString(),
+    };
+    await createRecord(data);
   };
 
   return (
@@ -91,7 +105,7 @@ export default function AddRecordForm() {
           )}
 
           {/* SAVE RECORD BUTTON */}
-          <TouchableOpacity style={styles.saveButton}>
+          <TouchableOpacity style={styles.saveButton} onPress={saveRecord}>
             <Feather name="save" size={18} color="#121212" />
             <Text style={styles.saveButtonText}>Save Record</Text>
           </TouchableOpacity>
