@@ -1,10 +1,22 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { IRecordModel } from "@/utils/types";
 
-// TODO: add types for the animal records
-export default function AnimalRecordsItem({ item, onView, onEdit, onDelete }) {
+interface Props {
+  item: IRecordModel;
+  onView: () => void;
+  onEdit: () => void;
+  onDelete: (item: IRecordModel) => void;
+}
+
+export default function AnimalRecordsItem({
+  item,
+  onView,
+  onEdit,
+  onDelete,
+}: Props) {
   // Format the date to be more readable
-  const formattedDate = new Date(item.date).toLocaleDateString("en-US", {
+  const formattedDate = new Date(item.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -20,7 +32,7 @@ export default function AnimalRecordsItem({ item, onView, onEdit, onDelete }) {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.button, styles.viewButton]}
-            onPress={() => onView(item)}
+            onPress={() => onView()}
           >
             <Feather name="eye" size={16} color="#121212" />
             <Text style={styles.buttonText}>View</Text>
@@ -28,7 +40,7 @@ export default function AnimalRecordsItem({ item, onView, onEdit, onDelete }) {
 
           <TouchableOpacity
             style={[styles.button, styles.editButton]}
-            onPress={() => onEdit(item)}
+            onPress={() => onEdit()}
           >
             <Feather name="edit-2" size={16} color="#121212" />
             <Text style={styles.buttonText}>Edit</Text>

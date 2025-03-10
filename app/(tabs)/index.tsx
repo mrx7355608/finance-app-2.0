@@ -1,53 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList, SafeAreaView, StatusBar } from "react-native";
 import AnimalRecordsItem from "@/components/animal-records/animal-records-item";
 import DeleteConfirmationModal from "@/components/animal-records/delete-confirmation-modal";
-
-// Mock data for demonstration
-const initialRecords = [
-  {
-    id: "1",
-    name: "Max",
-    image: "https://picsum.photos/id/237/300/200",
-    date: "2023-05-15",
-  },
-  {
-    id: "2",
-    name: "Bella",
-    image: "https://picsum.photos/id/1025/300/200",
-    date: "2023-06-22",
-  },
-  {
-    id: "3",
-    name: "Charlie",
-    image: "https://picsum.photos/id/1074/300/200",
-    date: "2023-07-10",
-  },
-  {
-    id: "4",
-    name: "Luna",
-    image: "https://picsum.photos/id/169/300/200",
-    date: "2023-08-05",
-  },
-];
+import { getAllRecords } from "@/utils/records-data";
+import { IRecordModel } from "@/utils/types";
 
 export default function AnimalRecordsHome() {
-  const [records, setRecords] = useState(initialRecords);
-  const [recordToDelete, setRecordToDelete] = useState(null);
+  const [records, setRecords] = useState<IRecordModel[]>([]);
+  const [recordToDelete, setRecordToDelete] = useState<IRecordModel | null>(
+    null,
+  );
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleView = (item) => {
-    console.log("Viewing record:", item.id);
-    // Navigate to view screen
+  useEffect(() => {
+    const fetchRecordsFromDB = async () => {
+      const dbRecords = await getAllRecords();
+      setRecords(dbRecords);
+    };
+
+    fetchRecordsFromDB();
+  }, []);
+
+  const handleView = () => {
+    console.log("Viewing record");
   };
 
-  const handleEdit = (item) => {
-    console.log("Editing record:", item.id);
-    // Navigate to edit screen
+  const handleEdit = () => {
+    console.log("Editing record");
   };
 
-  const handleDelete = (item) => {
-    console.log("Deleting record:", item.id);
+  const handleDelete = (item: IRecordModel) => {
     setIsModalVisible(true);
     setRecordToDelete(item);
   };
@@ -58,7 +40,7 @@ export default function AnimalRecordsHome() {
 
       <FlatList
         data={records}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <AnimalRecordsItem
             item={item}
@@ -75,7 +57,7 @@ export default function AnimalRecordsHome() {
         onClose={() => setIsModalVisible(false)}
         onConfirm={() => {
           setRecords(
-            records.filter((record) => record.id !== recordToDelete.id),
+            records.filter((record) => record.id !== recordToDelete?.id),
           );
         }}
       />
