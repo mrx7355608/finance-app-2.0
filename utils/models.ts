@@ -8,3 +8,15 @@ export const recordsTable = sqliteTable("users_table", {
   sold_price: int().default(0),
   createdAt: text().notNull(),
 });
+
+export const expensesTable = sqliteTable("expenses", {
+  id: int("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  amount: int("amount").notNull(), // assuming integers like cents or whole numbers
+  createdAt: text("created_at").notNull().default(new Date().toISOString()),
+
+  // Foreign key to the records table
+  recordId: int("record_id")
+    .references(() => recordsTable.id)
+    .notNull(),
+});
