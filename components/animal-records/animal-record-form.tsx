@@ -7,15 +7,13 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
-  TextInputChangeEventData,
-  NativeSyntheticEvent,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "./image-picker";
 import ExpenseModal from "../expenses/expenses-modal";
 import ExpensesList from "../expenses/expenses-list";
 import styles from "./styles";
-import { createRecord } from "@/utils/records-data";
+import { createRecord } from "@/modules/records.services";
 
 export default function AddRecordForm() {
   const [name, setName] = useState("");
@@ -37,6 +35,7 @@ export default function AddRecordForm() {
       image: imageUri,
       createdAt: new Date().toISOString(),
     };
+
     await createRecord(data);
   };
 
