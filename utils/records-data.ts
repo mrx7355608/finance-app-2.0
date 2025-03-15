@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { IRecordInput } from "./types";
 
 // CREATE: Add a new record
-export async function createRecord(data: IRecordInput) {
+export async function insert(data: IRecordInput) {
   const { image, name, bought_price, sold_price } = data;
 
   await db.insert(recordsTable).values({
@@ -19,14 +19,14 @@ export async function createRecord(data: IRecordInput) {
 }
 
 // READ: Get all records
-export async function getAllRecords() {
+export async function findAll() {
   const allRecords = await db.select().from(recordsTable);
   console.log("All records:", allRecords);
   return allRecords;
 }
 
 // READ: Get a record by ID
-export async function getRecordById(recordId: number) {
+export async function findById(recordId: number) {
   const result = await db
     .select()
     .from(recordsTable)
@@ -36,7 +36,7 @@ export async function getRecordById(recordId: number) {
 }
 
 // UPDATE: Update sold price by record ID
-export async function updateSoldPrice(recordId: number, newSoldPrice: number) {
+export async function editSoldPrice(recordId: number, newSoldPrice: number) {
   await db
     .update(recordsTable)
     .set({ sold_price: newSoldPrice })
@@ -46,7 +46,7 @@ export async function updateSoldPrice(recordId: number, newSoldPrice: number) {
 }
 
 // UPDATE: Update name
-export async function updateRecordName(recordId: number, newName: string) {
+export async function editRecordName(recordId: number, newName: string) {
   await db
     .update(recordsTable)
     .set({ name: newName })
@@ -56,7 +56,7 @@ export async function updateRecordName(recordId: number, newName: string) {
 }
 
 // UPDATE: Update image
-export async function updateRecordImage(recordId: number, newImage: string) {
+export async function editRecordImage(recordId: number, newImage: string) {
   await db
     .update(recordsTable)
     .set({ image: newImage })
@@ -66,7 +66,7 @@ export async function updateRecordImage(recordId: number, newImage: string) {
 }
 
 // UPDATE: Update bought price by record ID
-export async function updateBoughtPrice(
+export async function editBoughtPrice(
   recordId: number,
   newBoughtPrice: number,
 ) {
@@ -79,7 +79,7 @@ export async function updateBoughtPrice(
 }
 
 // DELETE: Delete a record by ID
-export async function deleteRecord(recordId: number) {
+export async function remove(recordId: number) {
   await db.delete(recordsTable).where(eq(recordsTable.id, recordId));
   console.log(`Record ${recordId} deleted.`);
 
