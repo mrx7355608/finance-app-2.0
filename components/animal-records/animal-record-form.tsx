@@ -11,16 +11,18 @@ import {
 import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "./image-picker";
 import ExpenseModal from "../expenses/expenses-modal";
-import ExpensesList from "../expenses/expenses-list";
+import ExpensesInputList from "../expenses/expenses-input-list";
 import styles from "./styles";
 import { createRecord } from "@/modules/records.services";
+import { IExpense, IExpenseInput } from "@/utils/types";
+import { createExpense } from "@/modules/expenses.services";
 
 export default function AddRecordForm() {
   const [name, setName] = useState("");
   const [boughtPrice, setBoughtPrice] = useState("");
   const [soldPrice, setSoldPrice] = useState("");
   const [imageUri, setImageUri] = useState<string>("");
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState<IExpenseInput[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleImageSelected = (uri: string) => {
@@ -36,7 +38,19 @@ export default function AddRecordForm() {
       createdAt: new Date().toISOString(),
     };
 
-    await createRecord(data);
+    const record = await createRecord(data);
+    console.log(record.data);
+    if (expenses.length > 0) {
+      const e = expenses.map((ex) => ({
+        ...ex,
+        recordId: record.data.lastInsertRowId,
+      }));
+      console.log(e);
+    }
+  };
+
+  const handleAddExpense = async (newExpense: IExpenseInput) => {
+    setExpenses((prev) => [...prev, newExpense]);
   };
 
   return (
@@ -98,7 +112,7 @@ export default function AddRecordForm() {
 
           {/* EXPENSES LIST */}
           {expenses.length > 0 ? (
-            <ExpensesList expenses={expenses} />
+            <ExpensesInputList expenses={expenses} />
           ) : (
             <Text style={styles.noExpensesText}>No expenses added yet</Text>
           )}
@@ -115,6 +129,7 @@ export default function AddRecordForm() {
       <ExpenseModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        onCreate={handleAddExpense}
       />
     </SafeAreaView>
   );

@@ -10,19 +10,27 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "../animal-records/styles";
+import { IExpenseInput } from "@/utils/types";
 
-export default function ExpenseModal({ visible, onClose }) {
+interface Props {
+  visible: boolean;
+  onClose: () => void;
+  onCreate: (expense: IExpenseInput) => void;
+}
+
+export default function ExpenseModal({ visible, onClose, onCreate }: Props) {
   const [item, setItem] = useState("");
   const [amount, setAmount] = useState("");
 
   const handleSave = () => {
     if (item.trim() === "" || amount.trim() === "") {
-      return; // Don't save empty values
+      return;
     }
 
     // Reset form
     setItem("");
     setAmount("");
+    onCreate({ name: item, amount: Number(amount), recordId: 0 });
   };
 
   return (
