@@ -1,4 +1,4 @@
-import { IExpenseRepo } from "@/modules/expenses-data";
+import { IExpenseRepo } from "./expenses-data";
 import { IExpenseInput } from "@/utils/types";
 
 export const createExpenseService = (expensesRepo: IExpenseRepo) => {

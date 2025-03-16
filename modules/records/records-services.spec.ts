@@ -1,7 +1,4 @@
-import {
-  IRecordsService,
-  createRecordsService,
-} from "@/modules/records.services";
+import { IRecordsService, createRecordsService } from "./records.services";
 import { z } from "zod";
 
 const mockRepo = {
@@ -56,7 +53,7 @@ describe("Records Service", () => {
         sold_price: -1,
       };
 
-      await expect(service.createRecord(input as any)).rejects.toThrowError(
+      await expect(service.createRecord(input as any)).rejects.toThrow(
         z.ZodError,
       );
     });

@@ -1,8 +1,8 @@
 // record.service.ts
 import { eq } from "drizzle-orm";
-import { recordsTable } from "../utils/models";
+import { recordsTable } from "../../utils/models";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import { IRecordInput } from "../utils/types";
+import { IRecordInput } from "../../utils/types";
 
 export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
   /**

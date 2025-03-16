@@ -1,7 +1,7 @@
-import { recordSchema } from "@/modules/records.validation";
+import { recordSchema } from "./records.validation";
 import { z } from "zod";
-import { IRecordInput } from "@/utils/types";
-import { IRecordsRepo } from "@/modules/records-data";
+import { IRecordInput } from "../../utils/types";
+import { IRecordsRepo } from "./records-data";
 
 export const createRecordsService = (recordsRepo: IRecordsRepo) => {
   const {

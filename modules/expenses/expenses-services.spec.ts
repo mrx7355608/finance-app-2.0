@@ -1,7 +1,4 @@
-import {
-  IExpenseService,
-  createExpenseService,
-} from "@/modules/expenses.services";
+import { IExpenseService, createExpenseService } from "./expenses.services";
 
 // Create mock functions for all the repo methods the service depends on
 const mockExpensesRepo = {
