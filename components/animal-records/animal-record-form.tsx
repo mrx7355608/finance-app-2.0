@@ -13,9 +13,9 @@ import ImagePickerComponent from "./image-picker";
 import ExpenseModal from "../expenses/expenses-modal";
 import ExpensesInputList from "../expenses/expenses-input-list";
 import styles from "./styles";
-import { createRecord } from "@/modules/records.services";
 import { IExpense, IExpenseInput } from "@/utils/types";
-import { createExpense } from "@/modules/expenses.services";
+import { useServices } from "@/context/services.context";
+import { ZodError } from "zod";
 
 export default function AddRecordForm() {
   const [name, setName] = useState("");
@@ -24,6 +24,14 @@ export default function AddRecordForm() {
   const [imageUri, setImageUri] = useState<string>("");
   const [expenses, setExpenses] = useState<IExpenseInput[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const { recordsService } = useServices();
+
+  const [errors, setErrors] = useState({
+    name: "",
+    image: "",
+    sold_price: "",
+    bought_price: "",
+  });
 
   const handleImageSelected = (uri: string) => {
     setImageUri(uri);
@@ -35,17 +43,16 @@ export default function AddRecordForm() {
       sold_price: Number(soldPrice),
       bought_price: Number(boughtPrice),
       image: imageUri,
-      createdAt: new Date().toISOString(),
     };
 
-    const record = await createRecord(data);
-    console.log(record.data);
-    if (expenses.length > 0) {
-      const e = expenses.map((ex) => ({
-        ...ex,
-        recordId: record.data.lastInsertRowId,
-      }));
-      console.log(e);
+    try {
+      const record = await recordsService.createRecord(data);
+    } catch (err) {
+      if (err instanceof ZodError) {
+        err.errors.forEach((e) => {
+          setErrors((prev) => ({ ...prev, [e.path[0]]: e.message }));
+        });
+      }
     }
   };
 
@@ -62,6 +69,9 @@ export default function AddRecordForm() {
         <View style={styles.formSection}>
           <ImagePickerComponent onImageSelected={handleImageSelected} />
         </View>
+        {errors.image && (
+          <Text style={styles.errorMessage}>{errors.image}</Text>
+        )}
 
         {/* INPUTS */}
         <View style={styles.formSection}>
@@ -73,6 +83,9 @@ export default function AddRecordForm() {
             placeholder="Enter animal name"
             placeholderTextColor="#777777"
           />
+          {errors.name && (
+            <Text style={styles.errorMessage}>{errors.name}</Text>
+          )}
         </View>
         <View style={styles.formSection}>
           <Text style={styles.label}>Bought Price</Text>
@@ -84,6 +97,9 @@ export default function AddRecordForm() {
             placeholderTextColor="#777777"
             keyboardType="numeric"
           />
+          {errors.bought_price && (
+            <Text style={styles.errorMessage}>{errors.bought_price}</Text>
+          )}
         </View>
         <View style={styles.formSection}>
           <Text style={styles.label}>Sold Price</Text>
@@ -95,6 +111,9 @@ export default function AddRecordForm() {
             placeholderTextColor="#777777"
             keyboardType="numeric"
           />
+          {errors.sold_price && (
+            <Text style={styles.errorMessage}>{errors.sold_price}</Text>
+          )}
         </View>
 
         {/* ##### EXPENSES SECTION ##### */}

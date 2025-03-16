@@ -135,7 +135,7 @@ export default StyleSheet.create({
 
   // Image picker styles
   imagePickerContainer: {
-    marginBottom: 20,
+    marginBottom: 0,
   },
   imagePickerPlaceholder: {
     backgroundColor: "#1E1E1E",
@@ -243,5 +243,10 @@ export default StyleSheet.create({
     color: "#121212",
     fontSize: 16,
     fontWeight: "500",
+  },
+  errorMessage: {
+    marginBottom: 10,
+    marginTop: 8,
+    color: "#ffbbaa",
   },
 });

@@ -19,6 +19,7 @@ export {
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { db } from "@/utils/db";
 import migrations from "../drizzle/migrations";
+import ServicesProvider from "@/context/services.context";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -59,10 +60,12 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-      </Stack>
+      <ServicesProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        </Stack>
+      </ServicesProvider>
     </ThemeProvider>
   );
 }

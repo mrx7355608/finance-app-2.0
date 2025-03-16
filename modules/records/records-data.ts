@@ -36,7 +36,7 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
       createdAt: new Date().toISOString(),
     });
 
-    console.log("Record created!");
+    console.log("asambhav!");
     return record;
   };
 
