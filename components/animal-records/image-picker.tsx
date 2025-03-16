@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Image, TouchableOpacity, Text, Alert } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import styles from "./styles";
 
-export default function ImagePickerComponent({ onImageSelected }) {
-  const [image, setImage] = useState(null);
-
+export default function ImagePickerComponent({ image, setImage }) {
   const pickImage = async () => {
     // Request permissions
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -30,7 +28,6 @@ export default function ImagePickerComponent({ onImageSelected }) {
     // If user has selected an image, proceed
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setImage(result.assets[0].uri);
-      onImageSelected(result.assets[0].uri);
     }
   };
 
@@ -55,7 +52,6 @@ export default function ImagePickerComponent({ onImageSelected }) {
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setImage(result.assets[0].uri);
-      onImageSelected(result.assets[0].uri);
     }
   };
 

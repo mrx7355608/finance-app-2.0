@@ -10,10 +10,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "./image-picker";
-import ExpenseModal from "../expenses/expenses-modal";
-import ExpensesInputList from "../expenses/expenses-input-list";
 import styles from "./styles";
-import { IExpense, IExpenseInput } from "@/utils/types";
 import { useServices } from "@/context/services.context";
 import { ZodError } from "zod";
 
@@ -22,10 +19,7 @@ export default function AddRecordForm() {
   const [boughtPrice, setBoughtPrice] = useState("");
   const [soldPrice, setSoldPrice] = useState("");
   const [imageUri, setImageUri] = useState<string>("");
-  const [expenses, setExpenses] = useState<IExpenseInput[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
   const { recordsService } = useServices();
-
   const [errors, setErrors] = useState({
     name: "",
     image: "",
@@ -38,15 +32,14 @@ export default function AddRecordForm() {
   };
 
   const saveRecord = async () => {
-    const data = {
-      name,
-      sold_price: Number(soldPrice),
-      bought_price: Number(boughtPrice),
-      image: imageUri,
-    };
-
     try {
-      const record = await recordsService.createRecord(data);
+      const data = {
+        name,
+        sold_price: Number(soldPrice),
+        bought_price: Number(boughtPrice),
+        image: imageUri,
+      };
+      await recordsService.createRecord(data);
     } catch (err) {
       if (err instanceof ZodError) {
         err.errors.forEach((e) => {
@@ -56,18 +49,14 @@ export default function AddRecordForm() {
     }
   };
 
-  const handleAddExpense = async (newExpense: IExpenseInput) => {
-    setExpenses((prev) => [...prev, newExpense]);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
-      {/* IMAGE PICKER */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* IMAGE PICKER */}
         <View style={styles.formSection}>
-          <ImagePickerComponent onImageSelected={handleImageSelected} />
+          <ImagePickerComponent setImage={setImageUri} image={imageUri} />
         </View>
         {errors.image && (
           <Text style={styles.errorMessage}>{errors.image}</Text>
@@ -116,40 +105,12 @@ export default function AddRecordForm() {
           )}
         </View>
 
-        {/* ##### EXPENSES SECTION ##### */}
-        <View style={styles.formSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.formTitle2}>Expenses</Text>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => setModalVisible(true)}
-            >
-              <Feather name="plus" size={16} color="#121212" />
-              <Text style={styles.addButtonText}>Add Expense</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* EXPENSES LIST */}
-          {expenses.length > 0 ? (
-            <ExpensesInputList expenses={expenses} />
-          ) : (
-            <Text style={styles.noExpensesText}>No expenses added yet</Text>
-          )}
-
-          {/* SAVE RECORD BUTTON */}
-          <TouchableOpacity style={styles.saveButton} onPress={saveRecord}>
-            <Feather name="save" size={18} color="#121212" />
-            <Text style={styles.saveButtonText}>Save Record</Text>
-          </TouchableOpacity>
-        </View>
+        {/* SAVE RECORD BUTTON */}
+        <TouchableOpacity style={styles.saveButton} onPress={saveRecord}>
+          <Feather name="save" size={18} color="#121212" />
+          <Text style={styles.saveButtonText}>Save Record</Text>
+        </TouchableOpacity>
       </ScrollView>
-
-      {/* EXPENSES MODAL */}
-      <ExpenseModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onCreate={handleAddExpense}
-      />
     </SafeAreaView>
   );
 }
