@@ -6,6 +6,7 @@ import { IRecordModel } from "@/utils/types";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { db } from "@/utils/db";
 import { recordsTable } from "@/utils/models";
+import { useRouter } from "expo-router";
 
 export default function AnimalRecordsHome() {
   const [recordToDelete, setRecordToDelete] = useState<IRecordModel | null>(
@@ -13,13 +14,14 @@ export default function AnimalRecordsHome() {
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { data } = useLiveQuery(db.select().from(recordsTable));
+  const router = useRouter();
 
   const handleView = () => {
     console.log("Viewing record");
   };
 
-  const handleEdit = () => {
-    console.log("Editing record");
+  const handleEdit = (id: number) => {
+    router.navigate(`/edit/${id}`);
   };
 
   const handleDelete = (item: IRecordModel) => {
@@ -38,7 +40,7 @@ export default function AnimalRecordsHome() {
           <AnimalRecordsItem
             item={item}
             onView={handleView}
-            onEdit={handleEdit}
+            onEdit={() => handleEdit(item.id)}
             onDelete={handleDelete}
           />
         )}

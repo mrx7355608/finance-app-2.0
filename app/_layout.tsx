@@ -63,7 +63,7 @@ function RootLayoutNav() {
       <ServicesProvider>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          <Stack.Screen name="edit/[id]" options={{ presentation: "modal" }} />
         </Stack>
       </ServicesProvider>
     </ThemeProvider>

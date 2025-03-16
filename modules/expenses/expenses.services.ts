@@ -1,5 +1,6 @@
 import { IExpenseRepo } from "./expenses-data";
 import { IExpenseInput } from "@/utils/types";
+import { expenseInputSchema } from "./expenses.validation";
 
 export const createExpenseService = (expensesRepo: IExpenseRepo) => {
   /**
@@ -7,15 +8,8 @@ export const createExpenseService = (expensesRepo: IExpenseRepo) => {
    * Includes additional business logic if needed
    */
   const createExpense = async (expenseInput: IExpenseInput) => {
-    // Example validation: Ensure amount is positive
-    if (expenseInput.amount <= 0) {
-      throw new Error("Expense amount must be greater than zero.");
-    }
-
-    // Check for duplication or other rules if necessary
-    // const existingExpense = await expensesRepo.findExpenseById(??);
-
-    const result = await expensesRepo.insertExpense(expenseInput);
+    const validated = expenseInputSchema.parse(expenseInput);
+    const result = await expensesRepo.insertExpense(validated);
     return result;
   };
 
