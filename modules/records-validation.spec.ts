@@ -7,7 +7,6 @@ describe("recordSchema validation", () => {
     name: "Elephant",
     bought_price: 5000,
     sold_price: 7000,
-    createdAt: "2025-03-10T14:00:00Z",
   };
 
   it("should validate a correct record successfully", () => {
@@ -94,32 +93,6 @@ describe("recordSchema validation", () => {
       if (error instanceof z.ZodError) {
         expect(error.flatten().fieldErrors.sold_price).toContain(
           "Sold price must be zero or greater.",
-        );
-      }
-    }
-  });
-
-  it("should fail if createdAt is not a valid ISO datetime", () => {
-    try {
-      const data = { ...validRecord, createdAt: "invalid-date" };
-      recordSchema.parse(data);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        expect(error.flatten().fieldErrors.createdAt).toContain(
-          "Created date must be a valid ISO datetime.",
-        );
-      }
-    }
-  });
-
-  it("should fail if createdAt is omitted", () => {
-    try {
-      const { createdAt, ...data } = validRecord;
-      recordSchema.parse(data);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        expect(error.flatten().fieldErrors.createdAt).toContain(
-          "Date is required",
         );
       }
     }

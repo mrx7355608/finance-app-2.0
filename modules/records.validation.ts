@@ -33,14 +33,6 @@ export const recordSchema = z.object({
     .nonnegative({ message: "Sold price must be zero or greater." })
     .nullable()
     .optional(),
-
-  createdAt: z
-    .string({
-      invalid_type_error: "Created date must be a string.",
-      required_error: "Date is required",
-    })
-    .datetime({ message: "Created date must be a valid ISO datetime." }),
 });
 
-// ✅ Type inferred from the schema (optional)
 export type RecordValidationInput = z.infer<typeof recordSchema>;

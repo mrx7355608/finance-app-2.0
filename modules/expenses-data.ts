@@ -1,6 +1,6 @@
-import { expensesTable } from "./models"; // your schema
+import { expensesTable } from "../utils/models"; // your schema
 import { eq } from "drizzle-orm";
-import { IExpenseInput } from "./types";
+import { IExpenseInput } from "../utils/types";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 
 // Factory function for Expenses CRUD operations
