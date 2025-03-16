@@ -1,135 +1,99 @@
-import { db } from "@/utils/db";
-import { expensesTable, recordsTable } from "@/utils/models";
-import { eq } from "drizzle-orm";
+import { IExpenseRepo } from "@/utils/expenses-data";
 import { IExpenseInput } from "@/utils/types";
 
-/**
- * Helper: Check if an expense exists by ID
- */
-export async function checkExpenseExists(id: number) {
-  const result = await db
-    .select({ id: expensesTable.id })
-    .from(expensesTable)
-    .where(eq(expensesTable.id, id))
-    .limit(1);
+export const createExpenseService = (expensesRepo: IExpenseRepo) => {
+  /**
+   * Create a new expense
+   * Includes additional business logic if needed
+   */
+  const createExpense = async (expenseInput: IExpenseInput) => {
+    // Example validation: Ensure amount is positive
+    if (expenseInput.amount <= 0) {
+      throw new Error("Expense amount must be greater than zero.");
+    }
 
-  return result.length > 0;
-}
+    // Check for duplication or other rules if necessary
+    // const existingExpense = await expensesRepo.findExpenseById(??);
 
-/**
- * Helper: Check if a record exists by ID
- */
-export async function checkRecordExists(recordId: number) {
-  const result = await db
-    .select()
-    .from(recordsTable)
-    .where(eq(recordsTable.id, recordId));
-  return result[0] ? true : false;
-}
+    const result = await expensesRepo.insertExpense(expenseInput);
+    return result;
+  };
 
-/**
- * Create a new expense
- */
-export async function createExpense(input: IExpenseInput) {
-  const { name, amount, recordId } = input;
+  /**
+   * Get all expenses
+   */
+  const getAllExpenses = async () => {
+    return expensesRepo.findAllExpenses();
+  };
 
-  if (!name || name.trim() === "") {
-    throw new Error("Expense name is required.");
-  }
+  /**
+   * Get a single expense by its ID
+   */
+  const getExpenseById = async (id: number) => {
+    const expense = await expensesRepo.findExpenseById(id);
+    if (!expense) {
+      throw new Error(`Expense with ID ${id} not found.`);
+    }
 
-  if (amount <= 0) {
-    throw new Error("Expense amount must be greater than 0.");
-  }
+    return expense;
+  };
 
-  // Check if record exists
-  const recordExists = await checkRecordExists(recordId);
-  if (!recordExists) {
-    throw new Error(`Record with ID ${recordId} does not exist.`);
-  }
+  /**
+   * Get all expenses by recordId
+   */
+  const getExpensesByRecordId = async (recordId: number) => {
+    return expensesRepo.findExpensesByRecordId(recordId);
+  };
 
-  const result = await db.insert(expensesTable).values({
-    name,
-    amount,
-    recordId,
-    createdAt: new Date().toISOString(),
-  });
+  /**
+   * Update an expense name
+   */
+  const updateExpenseName = async (id: number, newName: string) => {
+    const exists = await expensesRepo.expenseExists(id);
+    if (!exists) {
+      throw new Error(`Cannot update. Expense with ID ${id} does not exist.`);
+    }
 
-  return result;
-}
+    return expensesRepo.editExpenseName(id, newName);
+  };
 
-/**
- * Get expenses by record ID
- */
-export async function getExpensesByRecordId(recordId: number) {
-  if (!recordId) {
-    throw new Error("Record ID is required.");
-  }
+  /**
+   * Update an expense amount
+   */
+  const updateExpenseAmount = async (id: number, newAmount: number) => {
+    if (newAmount <= 0) {
+      throw new Error("Expense amount must be greater than zero.");
+    }
 
-  const recordExists = await checkRecordExists(recordId);
-  if (!recordExists) {
-    throw new Error(`Record with ID ${recordId} does not exist.`);
-  }
+    const exists = await expensesRepo.expenseExists(id);
+    if (!exists) {
+      throw new Error(`Cannot update. Expense with ID ${id} does not exist.`);
+    }
 
-  const result = await db
-    .select()
-    .from(expensesTable)
-    .where(eq(expensesTable.recordId, recordId));
+    return expensesRepo.editExpenseAmount(id, newAmount);
+  };
 
-  return result;
-}
+  /**
+   * Delete an expense by ID
+   */
+  const deleteExpense = async (id: number) => {
+    const exists = await expensesRepo.expenseExists(id);
+    if (!exists) {
+      throw new Error(`Cannot delete. Expense with ID ${id} does not exist.`);
+    }
 
-/**
- * Update expense name
- */
-export async function updateExpenseName(id: number, newName: string) {
-  if (!newName || newName.trim() === "") {
-    throw new Error("New name cannot be empty.");
-  }
+    return expensesRepo.removeExpense(id);
+  };
 
-  const exists = await checkExpenseExists(id);
-  if (!exists) {
-    throw new Error(`Expense with ID ${id} does not exist.`);
-  }
+  return {
+    createExpense,
+    getAllExpenses,
+    getExpenseById,
+    getExpensesByRecordId,
+    updateExpenseName,
+    updateExpenseAmount,
+    deleteExpense,
+  };
+};
 
-  await db
-    .update(expensesTable)
-    .set({ name: newName })
-    .where(eq(expensesTable.id, id));
-
-  return { message: "Expense name updated successfully" };
-}
-
-/**
- * Update expense amount
- */
-export async function updateExpenseAmount(id: number, newAmount: number) {
-  if (newAmount <= 0) {
-    throw new Error("Amount must be greater than 0.");
-  }
-
-  const exists = await checkExpenseExists(id);
-  if (!exists) {
-    throw new Error(`Expense with ID ${id} does not exist.`);
-  }
-
-  await db
-    .update(expensesTable)
-    .set({ amount: newAmount })
-    .where(eq(expensesTable.id, id));
-
-  return { message: "Expense amount updated successfully" };
-}
-
-/**
- * Delete an expense
- */
-export async function deleteExpense(id: number) {
-  const exists = await checkExpenseExists(id);
-  if (!exists) {
-    throw new Error(`Expense with ID ${id} does not exist.`);
-  }
-
-  await db.delete(expensesTable).where(eq(expensesTable.id, id));
-
-  return { message: "Expense deleted successfully" };
-}
+export type IExpenseService = ReturnType<typeof createExpenseService>;
