@@ -3,6 +3,20 @@ import { recordsTable } from "./models";
 import { eq } from "drizzle-orm";
 import { IRecordInput } from "./types";
 
+export const checkRecordExists = async (recordId: number) => {
+  if (!recordId) {
+    throw new Error("Record ID is required.");
+  }
+
+  const record = await db
+    .select({ id: recordsTable.id })
+    .from(recordsTable)
+    .where(eq(recordsTable.id, recordId))
+    .limit(1);
+
+  return record[0];
+};
+
 // CREATE: Add a new record
 export async function insert(data: IRecordInput) {
   const { image, name, bought_price, sold_price } = data;
