@@ -1,4 +1,4 @@
-import { createExpenseSchema } from "./expenses.validation"; // Adjust path if needed
+import { expenseInputSchema } from "./expenses.validation"; // Adjust path if needed
 
 describe("createExpenseSchema validation", () => {
   it("should pass with valid data", () => {
@@ -8,7 +8,7 @@ describe("createExpenseSchema validation", () => {
       recordId: 1,
     };
 
-    const result = createExpenseSchema.safeParse(validData);
+    const result = expenseInputSchema.safeParse(validData);
 
     expect(result.success).toBe(true);
     if (result.success) {
@@ -22,7 +22,7 @@ describe("createExpenseSchema validation", () => {
       recordId: 1,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -38,7 +38,7 @@ describe("createExpenseSchema validation", () => {
       recordId: 1,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -54,7 +54,7 @@ describe("createExpenseSchema validation", () => {
       recordId: 1,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -71,7 +71,7 @@ describe("createExpenseSchema validation", () => {
       recordId: 1,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -88,7 +88,7 @@ describe("createExpenseSchema validation", () => {
       recordId: 1,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -104,7 +104,7 @@ describe("createExpenseSchema validation", () => {
       amount: 50,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -119,7 +119,7 @@ describe("createExpenseSchema validation", () => {
       recordId: -5,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -136,7 +136,7 @@ describe("createExpenseSchema validation", () => {
       recordId: 1.5,
     };
 
-    const result = createExpenseSchema.safeParse(invalidData);
+    const result = expenseInputSchema.safeParse(invalidData);
 
     expect(result.success).toBe(false);
     if (!result.success) {

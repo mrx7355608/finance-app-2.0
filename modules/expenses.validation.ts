@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createExpenseSchema = z.object({
+export const expenseInputSchema = z.object({
   name: z
     .string({
       required_error: "Expense name is required.",
