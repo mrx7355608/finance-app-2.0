@@ -8,10 +8,10 @@ import {
   ScrollView,
   StatusBar,
 } from "react-native";
-import ExpensesInputList from "@/components/expenses/expenses-input-list";
+import ExpensesList from "@/components/expenses/expenses-list";
 import ExpenseModal from "@/components/expenses/expenses-modal";
 import styles from "@/components/animal-records/styles";
-import { IExpenseInput, IRecordModel } from "@/utils/types";
+import { IExpense, IExpenseInput, IRecordModel } from "@/utils/types";
 import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "@/components/animal-records/image-picker";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -22,7 +22,7 @@ export default function EditRecord() {
   const { id } = useLocalSearchParams();
   const { recordsService, expenseService } = useServices();
   const [loading, setLoading] = useState(false);
-  const [expenses, setExpenses] = useState<IExpenseInput[]>([]);
+  const [expenses, setExpenses] = useState<IExpense[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [record, setRecord] = useState<IRecordModel | null>(null);
   const [errors, setErrors] = useState({
@@ -32,7 +32,7 @@ export default function EditRecord() {
     bought_price: "",
   });
 
-  // Fetch the record from id
+  // Fetch the record and expenses from id
   useEffect(() => {
     recordsService
       .getRecordById(Number(id))
@@ -69,32 +69,31 @@ export default function EditRecord() {
     }
   };
 
-  const handleName = (name: string) => {
-    setRecord((prev) => {
-      if (!prev) return prev;
-      return { ...prev, name };
-    });
-  };
-
-  const handleImage = (newImage: string) => {
-    setRecord((prev) => {
-      if (!prev) return prev;
-      return { ...prev, image: newImage };
-    });
-  };
-
-  const handleSoldPrice = (newSoldPrice: string) => {
-    setRecord((prev) => {
-      if (!prev) return prev;
-      return { ...prev, sold_price: Number(newSoldPrice) };
-    });
-  };
-
-  const handleBoughtPrice = (newBoughtPrice: string) => {
-    setRecord((prev) => {
-      if (!prev) return prev;
-      return { ...prev, bought_price: Number(newBoughtPrice) };
-    });
+  const handlers = {
+    name: (name: string) => {
+      setRecord((prev) => {
+        if (!prev) return prev;
+        return { ...prev, name };
+      });
+    },
+    image: (newImage: string) => {
+      setRecord((prev) => {
+        if (!prev) return prev;
+        return { ...prev, image: newImage };
+      });
+    },
+    soldPrice: (newSoldPrice: string) => {
+      setRecord((prev) => {
+        if (!prev) return prev;
+        return { ...prev, sold_price: Number(newSoldPrice) };
+      });
+    },
+    boughtPrice: (newBoughtPrice: string) => {
+      setRecord((prev) => {
+        if (!prev) return prev;
+        return { ...prev, bought_price: Number(newBoughtPrice) };
+      });
+    },
   };
 
   const saveRecord = () => {
@@ -110,7 +109,10 @@ export default function EditRecord() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* IMAGE PICKER */}
           <View style={styles.formSection}>
-            <ImagePickerComponent image={record.image} setImage={handleImage} />
+            <ImagePickerComponent
+              image={record.image}
+              setImage={handlers.image}
+            />
           </View>
           {errors.image && (
             <Text style={styles.errorMessage}>{errors.image}</Text>
@@ -122,7 +124,7 @@ export default function EditRecord() {
             <TextInput
               style={styles.input}
               value={record.name}
-              onChangeText={handleName}
+              onChangeText={handlers.name}
               placeholder="Enter animal name"
               placeholderTextColor="#777777"
             />
@@ -135,7 +137,7 @@ export default function EditRecord() {
             <TextInput
               style={styles.input}
               value={String(record.bought_price)}
-              onChangeText={handleBoughtPrice}
+              onChangeText={handlers.boughtPrice}
               placeholder="Rs.2000"
               placeholderTextColor="#777777"
               keyboardType="numeric"
@@ -149,7 +151,7 @@ export default function EditRecord() {
             <TextInput
               style={styles.input}
               value={record.sold_price ? String(record.sold_price) : ""}
-              onChangeText={handleSoldPrice}
+              onChangeText={handlers.soldPrice}
               placeholder="Rs.2000"
               placeholderTextColor="#777777"
               keyboardType="numeric"
@@ -173,7 +175,7 @@ export default function EditRecord() {
 
           {/* EXPENSES LIST */}
           {expenses.length > 0 ? (
-            <ExpensesInputList expenses={expenses} />
+            <ExpensesList expenses={expenses} setExpenses={setExpenses} />
           ) : (
             <Text style={styles.noExpensesText}>No expenses added yet</Text>
           )}
@@ -183,6 +185,7 @@ export default function EditRecord() {
             <Text style={styles.saveButtonText}>Save Record</Text>
           </TouchableOpacity>
         </ScrollView>
+
         {/* EXPENSES MODAL */}
         <ExpenseModal
           visible={modalVisible}
