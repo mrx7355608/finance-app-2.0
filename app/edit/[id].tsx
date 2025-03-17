@@ -9,7 +9,7 @@ import {
   StatusBar,
 } from "react-native";
 import ExpensesList from "@/components/expenses/expenses-list";
-import ExpenseModal from "@/components/expenses/expenses-modal";
+import CreateExpenseModal from "@/components/expenses/create-expenses-modal";
 import styles from "@/components/animal-records/styles";
 import { IExpense, IExpenseInput, IRecordModel } from "@/utils/types";
 import { Feather } from "@expo/vector-icons";
@@ -187,7 +187,7 @@ export default function EditRecord() {
         </ScrollView>
 
         {/* EXPENSES MODAL */}
-        <ExpenseModal
+        <CreateExpenseModal
           visible={modalVisible}
           recordId={record.id}
           onClose={() => setModalVisible(false)}

@@ -42,29 +42,20 @@ export const createExpenseService = (expensesRepo: IExpenseRepo) => {
   /**
    * Update an expense name
    */
-  const updateExpenseName = async (id: number, newName: string) => {
+  const updateExpense = async (
+    id: number,
+    newName: string,
+    newAmount: number,
+  ) => {
     const exists = await expensesRepo.expenseExists(id);
     if (!exists) {
       throw new Error(`Cannot update. Expense with ID ${id} does not exist.`);
     }
-
-    return expensesRepo.editExpenseName(id, newName);
-  };
-
-  /**
-   * Update an expense amount
-   */
-  const updateExpenseAmount = async (id: number, newAmount: number) => {
     if (newAmount <= 0) {
       throw new Error("Expense amount must be greater than zero.");
     }
 
-    const exists = await expensesRepo.expenseExists(id);
-    if (!exists) {
-      throw new Error(`Cannot update. Expense with ID ${id} does not exist.`);
-    }
-
-    return expensesRepo.editExpenseAmount(id, newAmount);
+    return expensesRepo.editExpense(id, newAmount, newName);
   };
 
   /**
@@ -84,8 +75,7 @@ export const createExpenseService = (expensesRepo: IExpenseRepo) => {
     getAllExpenses,
     getExpenseById,
     getExpensesByRecordId,
-    updateExpenseName,
-    updateExpenseAmount,
+    updateExpense,
     deleteExpense,
   };
 };

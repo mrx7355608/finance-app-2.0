@@ -100,6 +100,11 @@ export default StyleSheet.create({
     fontSize: 14,
     marginTop: 4,
   },
+  expenseItemButtons: {
+    display: "flex",
+    alignItems: "center",
+    gap: 15,
+  },
   noExpensesText: {
     color: "#777777",
     fontStyle: "italic",

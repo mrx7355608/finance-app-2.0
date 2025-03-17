@@ -66,27 +66,20 @@ export const createExpensesRepo = (db: ExpoSQLiteDatabase) => {
   };
 
   /**
-   * Update expense name by ID
-   */
-  const editExpenseName = async (id: number, newName: string) => {
-    const result = await db
-      .update(expensesTable)
-      .set({ name: newName })
-      .where(eq(expensesTable.id, id));
-
-    return result;
-  };
-
-  /**
    * Update expense amount by ID
    */
-  const editExpenseAmount = async (id: number, newAmount: number) => {
+  const editExpense = async (
+    id: number,
+    newAmount: number,
+    newName: string,
+  ) => {
     const result = await db
       .update(expensesTable)
-      .set({ amount: newAmount })
-      .where(eq(expensesTable.id, id));
+      .set({ amount: newAmount, name: newName })
+      .where(eq(expensesTable.id, id))
+      .returning();
 
-    return result;
+    return result[0];
   };
 
   /**
@@ -106,8 +99,7 @@ export const createExpensesRepo = (db: ExpoSQLiteDatabase) => {
     findAllExpenses,
     findExpenseById,
     findExpensesByRecordId,
-    editExpenseName,
-    editExpenseAmount,
+    editExpense,
     removeExpense,
   };
 };

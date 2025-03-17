@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
   Modal,
   View,
@@ -10,26 +10,28 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "../animal-records/styles";
-import { IExpenseInput } from "@/utils/types";
+import { IExpense, IExpenseInput } from "@/utils/types";
+import { useServices } from "@/context/services.context";
 
 interface Props {
   visible: boolean;
-  recordId: number;
   onClose: () => void;
-  onCreate: (expense: IExpenseInput) => void;
+  expenseToEdit: IExpense;
+  setExpenses: Dispatch<SetStateAction<IExpense[]>>;
 }
 
-export default function ExpenseModal({
+export default function EditExpenseModal({
   visible,
-  recordId,
   onClose,
-  onCreate,
+  expenseToEdit,
+  setExpenses,
 }: Props) {
-  const [item, setItem] = useState("");
-  const [amount, setAmount] = useState("");
+  const [item, setItem] = useState(expenseToEdit.name);
+  const [amount, setAmount] = useState(String(expenseToEdit.amount));
   const [error, setError] = useState("");
+  const { expenseService } = useServices();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (item.trim() === "" || amount.trim() === "") {
       setError("Please fill in all the fields");
       setTimeout(() => setError(""), 5000);
@@ -37,10 +39,19 @@ export default function ExpenseModal({
     }
 
     // Reset form
+    const result = await expenseService.updateExpense(
+      expenseToEdit.id,
+      item,
+      Number(amount),
+    );
+    setExpenses((prev) => {
+      const copy = prev.filter((p) => p.id !== expenseToEdit.id);
+      return [result, ...copy];
+    });
     setItem("");
     setAmount("");
     setError("");
-    onCreate({ name: item, amount: Number(amount), recordId });
+    onClose();
   };
 
   return (
@@ -54,7 +65,7 @@ export default function ExpenseModal({
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Expense</Text>
+              <Text style={styles.modalTitle}>Edit Expense</Text>
               <TouchableOpacity onPress={onClose}>
                 <Feather name="x" size={24} color="#FFFFFF" />
               </TouchableOpacity>
@@ -79,7 +90,7 @@ export default function ExpenseModal({
                   style={styles.input}
                   value={amount}
                   onChangeText={setAmount}
-                  placeholder="0.00"
+                  placeholder="Rs. 200"
                   placeholderTextColor="#777777"
                   keyboardType="numeric"
                 />
@@ -98,7 +109,7 @@ export default function ExpenseModal({
                 style={styles.modalSaveButton}
                 onPress={handleSave}
               >
-                <Text style={styles.modalSaveButtonText}>Add</Text>
+                <Text style={styles.modalSaveButtonText}>Edit</Text>
               </TouchableOpacity>
             </View>
           </View>
