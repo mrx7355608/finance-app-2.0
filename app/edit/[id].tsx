@@ -14,9 +14,8 @@ import styles from "@/components/animal-records/styles";
 import { IExpense, IExpenseInput, IRecordModel } from "@/utils/types";
 import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "@/components/animal-records/image-picker";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useServices } from "@/context/services.context";
-import { ZodError } from "zod";
 
 export default function EditRecord() {
   const { id } = useLocalSearchParams();
@@ -31,21 +30,26 @@ export default function EditRecord() {
     sold_price: "",
     bought_price: "",
   });
+  const router = useRouter();
 
   // Fetch the record and expenses from id
   useEffect(() => {
-    recordsService
-      .getRecordById(Number(id))
-      .then(async ({ data }) => {
-        if (!data) return;
+    const fetchRecordAndExpenses = async () => {
+      try {
+        const { data } = await recordsService.getRecordById(Number(id));
         const expensesList = await expenseService.getExpensesByRecordId(
           data.id,
         );
         setExpenses(expensesList);
         setRecord(data);
-      })
-      .catch(console.log)
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.log((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecordAndExpenses();
   }, [id]);
 
   // Show loading state
@@ -59,14 +63,8 @@ export default function EditRecord() {
   }
 
   const handleAddExpense = async (newExpense: IExpenseInput) => {
-    try {
-      await expenseService.createExpense(newExpense);
-      setExpenses((prev) => [...prev, newExpense]);
-    } catch (err) {
-      if (err instanceof ZodError) {
-        console.log(err.errors);
-      }
-    }
+    const expense = await expenseService.createExpense(newExpense);
+    setExpenses((prev) => [...prev, expense]);
   };
 
   const handlers = {
@@ -96,8 +94,14 @@ export default function EditRecord() {
     },
   };
 
-  const saveRecord = () => {
-    console.log(record);
+  const updateRecord = async () => {
+    await recordsService.updateRecord(record.id, {
+      name: record.name,
+      sold_price: record.sold_price,
+      bought_price: record.bought_price,
+      image: record.image,
+    });
+    router.navigate("/");
   };
 
   return (
@@ -180,7 +184,7 @@ export default function EditRecord() {
             <Text style={styles.noExpensesText}>No expenses added yet</Text>
           )}
           {/* SAVE RECORD BUTTON */}
-          <TouchableOpacity style={styles.saveButton} onPress={saveRecord}>
+          <TouchableOpacity style={styles.saveButton} onPress={updateRecord}>
             <Feather name="save" size={18} color="#121212" />
             <Text style={styles.saveButtonText}>Save Record</Text>
           </TouchableOpacity>

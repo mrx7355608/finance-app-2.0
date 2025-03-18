@@ -22,14 +22,17 @@ export const createExpensesRepo = (db: ExpoSQLiteDatabase) => {
    * Create an expense record
    */
   const insertExpense = async ({ name, amount, recordId }: IExpenseInput) => {
-    const result = await db.insert(expensesTable).values({
-      name,
-      amount,
-      recordId,
-      createdAt: new Date().toISOString(),
-    });
+    const result = await db
+      .insert(expensesTable)
+      .values({
+        name,
+        amount,
+        recordId,
+        createdAt: new Date().toISOString(),
+      })
+      .returning();
 
-    return result;
+    return result[0];
   };
 
   /**
@@ -66,7 +69,7 @@ export const createExpensesRepo = (db: ExpoSQLiteDatabase) => {
   };
 
   /**
-   * Update expense amount by ID
+   * Update expense by ID
    */
   const editExpense = async (
     id: number,

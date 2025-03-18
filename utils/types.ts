@@ -4,14 +4,14 @@ export type IRecordModel = {
   name: string;
   createdAt: string;
   bought_price: number;
-  sold_price: number | null;
+  sold_price: number | null | undefined;
 };
 
 export type IRecordInput = {
   image: string;
   name: string;
   bought_price: number;
-  sold_price?: number;
+  sold_price?: number | null | undefined;
 };
 
 export interface IExpenseInput {

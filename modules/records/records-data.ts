@@ -1,6 +1,6 @@
 // record.service.ts
 import { eq } from "drizzle-orm";
-import { recordsTable } from "../../utils/models";
+import { expensesTable, recordsTable } from "../../utils/models";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { IRecordInput } from "../../utils/types";
 
@@ -64,49 +64,14 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
   /**
    * UPDATE: Update sold price by record ID
    */
-  const editSoldPrice = async (recordId: number, newSoldPrice: number) => {
-    await db
+  const editRecord = async (recordId: number, newData: IRecordInput) => {
+    const result = await db
       .update(recordsTable)
-      .set({ sold_price: newSoldPrice })
-      .where(eq(recordsTable.id, recordId));
+      .set({ ...newData })
+      .where(eq(recordsTable.id, recordId))
+      .returning();
 
-    console.log(`Record ${recordId} updated with new sold price.`);
-  };
-
-  /**
-   * UPDATE: Update name by record ID
-   */
-  const editRecordName = async (recordId: number, newName: string) => {
-    await db
-      .update(recordsTable)
-      .set({ name: newName })
-      .where(eq(recordsTable.id, recordId));
-
-    console.log(`Record ${recordId} updated with new name: ${newName}`);
-  };
-
-  /**
-   * UPDATE: Update image by record ID
-   */
-  const editRecordImage = async (recordId: number, newImage: string) => {
-    await db
-      .update(recordsTable)
-      .set({ image: newImage })
-      .where(eq(recordsTable.id, recordId));
-
-    console.log(`Record ${recordId} updated with new image: ${newImage}`);
-  };
-
-  /**
-   * UPDATE: Update bought price by record ID
-   */
-  const editBoughtPrice = async (recordId: number, newBoughtPrice: number) => {
-    await db
-      .update(recordsTable)
-      .set({ bought_price: newBoughtPrice })
-      .where(eq(recordsTable.id, recordId));
-
-    console.log(`Record ${recordId} updated with new bought price.`);
+    return result[0];
   };
 
   /**
@@ -116,7 +81,9 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
     await db.delete(recordsTable).where(eq(recordsTable.id, recordId));
     console.log(`Record ${recordId} deleted.`);
 
-    // TODO: Remove the expenses that are related to this record (if needed)
+    // Remove the expenses that are related to this record
+    await db.delete(expensesTable).where(eq(expensesTable.recordId, recordId));
+    console.log(`Deleted all expenses associated with ${recordId}.`);
   };
 
   return {
@@ -124,10 +91,7 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
     insert,
     findAll,
     findById,
-    editSoldPrice,
-    editRecordName,
-    editRecordImage,
-    editBoughtPrice,
+    editRecord,
     remove,
   };
 };
