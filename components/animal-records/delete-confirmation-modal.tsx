@@ -1,14 +1,27 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { IRecordModel } from "@/utils/types";
+import { useServices } from "@/context/services.context";
+
+type Props = {
+  visible: boolean;
+  record: IRecordModel | null;
+  onClose: () => void;
+};
 
 export default function DeleteConfirmationModal({
   visible,
   record,
   onClose,
-  onConfirm,
-}) {
+}: Props) {
+  const { recordsService } = useServices();
   if (!record) return null;
+
+  const deleteRecordWithExpenses = async () => {
+    await recordsService.deleteRecord(record.id);
+    onClose();
+  };
 
   return (
     <Modal
@@ -38,10 +51,7 @@ export default function DeleteConfirmationModal({
 
             <TouchableOpacity
               style={styles.deleteButton}
-              onPress={() => {
-                onConfirm(record.id);
-                onClose();
-              }}
+              onPress={deleteRecordWithExpenses}
             >
               <Feather name="trash-2" size={16} color="#FFFFFF" />
               <Text style={styles.deleteButtonText}>Delete</Text>

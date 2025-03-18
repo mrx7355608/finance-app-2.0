@@ -16,8 +16,8 @@ export default function AnimalRecordsHome() {
   const { data } = useLiveQuery(db.select().from(recordsTable));
   const router = useRouter();
 
-  const handleView = () => {
-    console.log("Viewing record");
+  const handleView = (id: number) => {
+    router.navigate(`/view/${id}`);
   };
 
   const handleEdit = (id: number) => {
@@ -39,7 +39,7 @@ export default function AnimalRecordsHome() {
         renderItem={({ item }) => (
           <AnimalRecordsItem
             item={item}
-            onView={handleView}
+            onView={() => handleView(item.id)}
             onEdit={() => handleEdit(item.id)}
             onDelete={handleDelete}
           />
@@ -50,7 +50,6 @@ export default function AnimalRecordsHome() {
         visible={isModalVisible}
         record={recordToDelete}
         onClose={() => setIsModalVisible(false)}
-        onConfirm={() => {}}
       />
     </SafeAreaView>
   );
