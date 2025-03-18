@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { IExpense, IRecordModel } from "@/utils/types";
 import { useServices } from "@/context/services.context";
 
@@ -61,105 +61,108 @@ const ViewRecordScreen = () => {
   const isProfitable = profitLoss > 0;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#121212" />
+    <>
+      <Stack.Screen options={{ title: "View Record" }} />
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
-      <ScrollView>
-        {/* Header with back button and title */}
-        <View style={styles.header}>
-          <View style={styles.backButton}>
-            <Feather name="arrow-left" size={24} color="#FFFFFF" />
+        <ScrollView>
+          {/* Animal Image */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: record.image }}
+              style={styles.animalImage}
+              resizeMode="cover"
+            />
           </View>
-          <Text style={styles.headerTitle}>{record.name}</Text>
-        </View>
 
-        {/* Animal Image */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: record.image }}
-            style={styles.animalImage}
-            resizeMode="cover"
-          />
-        </View>
-
-        {/* Price Information */}
-        <View style={styles.infoCard}>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Bought Price:</Text>
-            <Text style={styles.infoValue}>Rs.{record.bought_price}</Text>
+          {/* Header with back button and title */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>{record.name}</Text>
+            <Text style={styles.infoLabel}>
+              {new Date(record.createdAt).toDateString()}
+            </Text>
           </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Sold Price:</Text>
-            <Text style={styles.infoValue}>Rs.{record.sold_price || 0}</Text>
-          </View>
-        </View>
 
-        {/* Expenses Section */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Expenses</Text>
-
-          {expenses.map((item) => (
-            <View key={item.id} style={styles.expenseCard}>
-              <View>
-                <Text style={styles.expenseName}>{item.name}</Text>
-                <Text style={styles.expenseDate}>
-                  {new Date(item.createdAt).toLocaleString()}
-                </Text>
-              </View>
-              <Text style={styles.expenseAmount}>-Rs.{item.amount}</Text>
+          {/* Price Information */}
+          <View style={styles.infoCard}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Bought Price:</Text>
+              <Text style={styles.infoValue}>Rs.{record.bought_price}</Text>
             </View>
-          ))}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Sold Price:</Text>
+              <Text style={styles.infoValue}>Rs.{record.sold_price || 0}</Text>
+            </View>
+          </View>
 
-          <View style={styles.totalExpensesRow}>
-            <Text style={styles.totalExpensesLabel}>Total Expenses:</Text>
-            <Text style={styles.totalExpensesValue}>-Rs.{totalExpenses}</Text>
-          </View>
-        </View>
+          {/* Expenses Section */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Expenses</Text>
 
-        {/* Profit/Loss Calculation */}
-        <View
-          style={[
-            styles.profitLossCard,
-            isProfitable ? styles.profitCard : styles.lossCard,
-          ]}
-        >
-          <View style={styles.profitLossRow}>
-            <Text style={styles.profitLossLabel}>Sold Price:</Text>
-            <Text style={styles.profitLossValue}>
-              +{record.sold_price || 0}
-            </Text>
+            {expenses.map((item) => (
+              <View key={item.id} style={styles.expenseCard}>
+                <View>
+                  <Text style={styles.expenseName}>{item.name}</Text>
+                  <Text style={styles.expenseDate}>
+                    {new Date(item.createdAt).toDateString()}
+                  </Text>
+                </View>
+                <Text style={styles.expenseAmount}>-Rs.{item.amount}</Text>
+              </View>
+            ))}
+
+            <View style={styles.totalExpensesRow}>
+              <Text style={styles.totalExpensesLabel}>Total Expenses:</Text>
+              <Text style={styles.totalExpensesValue}>-Rs.{totalExpenses}</Text>
+            </View>
           </View>
-          <View style={styles.profitLossRow}>
-            <Text style={styles.profitLossLabel}>Bought Price:</Text>
-            <Text style={styles.profitLossValue}>-{record.bought_price}</Text>
+
+          {/* Profit/Loss Calculation */}
+          <View
+            style={[
+              styles.profitLossCard,
+              isProfitable ? styles.profitCard : styles.lossCard,
+            ]}
+          >
+            <View style={styles.profitLossRow}>
+              <Text style={styles.profitLossLabel}>Sold Price:</Text>
+              <Text style={styles.profitLossValue}>
+                +{record.sold_price || 0}
+              </Text>
+            </View>
+            <View style={styles.profitLossRow}>
+              <Text style={styles.profitLossLabel}>Bought Price:</Text>
+              <Text style={styles.profitLossValue}>-{record.bought_price}</Text>
+            </View>
+            <View style={styles.profitLossRow}>
+              <Text style={styles.profitLossLabel}>Total Expenses:</Text>
+              <Text style={styles.profitLossValue}>-{totalExpenses}</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.profitLossRow}>
+              <Text
+                style={[
+                  styles.profitLossTotal,
+                  isProfitable ? styles.profitText : styles.lossText,
+                ]}
+              >
+                {isProfitable ? "PROFIT:" : "LOSS:"}
+              </Text>
+              <Text
+                style={[
+                  styles.profitLossTotal,
+                  isProfitable ? styles.profitText : styles.lossText,
+                ]}
+              >
+                {isProfitable ? "+" : "-"}
+                Rs.{Math.abs(profitLoss)}
+              </Text>
+            </View>
           </View>
-          <View style={styles.profitLossRow}>
-            <Text style={styles.profitLossLabel}>Total Expenses:</Text>
-            <Text style={styles.profitLossValue}>-{totalExpenses}</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.profitLossRow}>
-            <Text
-              style={[
-                styles.profitLossTotal,
-                isProfitable ? styles.profitText : styles.lossText,
-              ]}
-            >
-              {isProfitable ? "PROFIT:" : "LOSS:"}
-            </Text>
-            <Text
-              style={[
-                styles.profitLossTotal,
-                isProfitable ? styles.profitText : styles.lossText,
-              ]}
-            >
-              {isProfitable ? "+" : "-"}
-              Rs.{Math.abs(profitLoss)}
-            </Text>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 };
 
@@ -170,9 +173,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
+    alignItems: "flex-start",
+    marginBottom: 46,
   },
   backButton: {
     width: 40,
@@ -185,8 +187,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: "#FFFFFF",
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
+    marginBottom: 5,
   },
   imageContainer: {
     alignItems: "center",
@@ -315,7 +318,5 @@ const styles = StyleSheet.create({
     color: "#FF5252",
   },
 });
-
-console.log("View Record Screen with profit/loss calculation rendered");
 
 export default ViewRecordScreen;
