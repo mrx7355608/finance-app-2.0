@@ -15,13 +15,16 @@ import { db } from "@/utils/db";
 import { recordsTable } from "@/utils/models";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { desc } from "drizzle-orm";
 
 export default function AnimalRecordsHome() {
   const [recordToDelete, setRecordToDelete] = useState<IRecordModel | null>(
     null,
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { data } = useLiveQuery(db.select().from(recordsTable));
+  const { data } = useLiveQuery(
+    db.select().from(recordsTable).orderBy(desc(recordsTable.createdAt)),
+  );
   const router = useRouter();
 
   const handleView = (id: number) => {
