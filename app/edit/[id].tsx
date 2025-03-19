@@ -110,7 +110,10 @@ export default function EditRecord() {
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* IMAGE PICKER */}
           <View style={styles.formSection}>
             <ImagePickerComponent
@@ -140,11 +143,11 @@ export default function EditRecord() {
             <Text style={styles.label}>Bought Price</Text>
             <TextInput
               style={styles.input}
-              value={String(record.bought_price)}
+              value={record.bought_price ? String(record.bought_price) : ""}
               onChangeText={handlers.boughtPrice}
-              placeholder="Rs.2000"
+              placeholder="2000"
               placeholderTextColor="#777777"
-              keyboardType="numeric"
+              inputMode="numeric"
             />
             {errors.bought_price && (
               <Text style={styles.errorMessage}>{errors.bought_price}</Text>
@@ -156,9 +159,9 @@ export default function EditRecord() {
               style={styles.input}
               value={record.sold_price ? String(record.sold_price) : ""}
               onChangeText={handlers.soldPrice}
-              placeholder="Rs.2000"
+              placeholder="2000"
               placeholderTextColor="#777777"
-              keyboardType="numeric"
+              inputMode="numeric"
             />
             {errors.sold_price && (
               <Text style={styles.errorMessage}>{errors.sold_price}</Text>
@@ -191,12 +194,14 @@ export default function EditRecord() {
         </ScrollView>
 
         {/* EXPENSES MODAL */}
-        <CreateExpenseModal
-          visible={modalVisible}
-          recordId={record.id}
-          onClose={() => setModalVisible(false)}
-          onCreate={handleAddExpense}
-        />
+        {modalVisible && (
+          <CreateExpenseModal
+            visible={modalVisible}
+            recordId={record.id}
+            onClose={() => setModalVisible(false)}
+            onCreate={handleAddExpense}
+          />
+        )}
       </SafeAreaView>
     </>
   );

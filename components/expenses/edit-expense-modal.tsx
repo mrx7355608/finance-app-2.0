@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Keyboard,
+  ScrollView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "../animal-records/styles";
@@ -61,7 +61,10 @@ export default function EditExpenseModal({
       visible={visible}
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView
+        contentContainerStyle={styles.modalOverlay}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
@@ -90,9 +93,9 @@ export default function EditExpenseModal({
                   style={styles.input}
                   value={amount}
                   onChangeText={setAmount}
-                  placeholder="Rs. 200"
+                  placeholder="100"
                   placeholderTextColor="#777777"
-                  keyboardType="numeric"
+                  inputMode="numeric"
                 />
               </View>
             </View>
@@ -109,12 +112,12 @@ export default function EditExpenseModal({
                 style={styles.modalSaveButton}
                 onPress={handleSave}
               >
-                <Text style={styles.modalSaveButtonText}>Edit</Text>
+                <Text style={styles.modalSaveButtonText}>Save</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </ScrollView>
     </Modal>
   );
 }

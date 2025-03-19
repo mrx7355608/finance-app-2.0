@@ -60,7 +60,10 @@ export default function AddRecordForm() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* IMAGE PICKER */}
         <View style={styles.formSection}>
           <ImagePickerComponent setImage={setImageUri} image={imageUri} />
@@ -89,9 +92,9 @@ export default function AddRecordForm() {
             style={styles.input}
             value={boughtPrice}
             onChangeText={setBoughtPrice}
-            placeholder="Rs.2000"
+            placeholder="2000"
             placeholderTextColor="#777777"
-            keyboardType="numeric"
+            inputMode="numeric"
           />
           {errors.bought_price && (
             <Text style={styles.errorMessage}>{errors.bought_price}</Text>
@@ -103,9 +106,9 @@ export default function AddRecordForm() {
             style={styles.input}
             value={soldPrice}
             onChangeText={setSoldPrice}
-            placeholder="Rs.2000"
+            placeholder="2000"
             placeholderTextColor="#777777"
-            keyboardType="numeric"
+            inputMode="numeric"
           />
           {errors.sold_price && (
             <Text style={styles.errorMessage}>{errors.sold_price}</Text>
