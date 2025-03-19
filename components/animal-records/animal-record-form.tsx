@@ -13,12 +13,14 @@ import ImagePickerComponent from "./image-picker";
 import styles from "./styles";
 import { useServices } from "@/context/services.context";
 import { ZodError } from "zod";
+import { useRouter } from "expo-router";
 
 export default function AddRecordForm() {
   const [name, setName] = useState("");
   const [boughtPrice, setBoughtPrice] = useState("");
   const [soldPrice, setSoldPrice] = useState("");
   const [imageUri, setImageUri] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   const { recordsService } = useServices();
   const [errors, setErrors] = useState({
     name: "",
@@ -26,13 +28,11 @@ export default function AddRecordForm() {
     sold_price: "",
     bought_price: "",
   });
-
-  const handleImageSelected = (uri: string) => {
-    setImageUri(uri);
-  };
+  const router = useRouter();
 
   const saveRecord = async () => {
     try {
+      setLoading(true);
       const data = {
         name,
         sold_price: Number(soldPrice),
@@ -46,6 +46,13 @@ export default function AddRecordForm() {
           setErrors((prev) => ({ ...prev, [e.path[0]]: e.message }));
         });
       }
+    } finally {
+      setName("");
+      setSoldPrice("");
+      setBoughtPrice("");
+      setImageUri("");
+      setLoading(false);
+      router.navigate("/");
     }
   };
 
@@ -106,9 +113,15 @@ export default function AddRecordForm() {
         </View>
 
         {/* SAVE RECORD BUTTON */}
-        <TouchableOpacity style={styles.saveButton} onPress={saveRecord}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={saveRecord}
+          disabled={loading}
+        >
           <Feather name="save" size={18} color="#121212" />
-          <Text style={styles.saveButtonText}>Save Record</Text>
+          <Text style={styles.saveButtonText}>
+            {loading ? "Creating..." : "Create Record"}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
