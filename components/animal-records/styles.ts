@@ -93,7 +93,8 @@ export default StyleSheet.create({
   },
   expenseItemText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: "bold",
   },
   expenseAmount: {
     color: "#AAAAAA",
@@ -103,7 +104,15 @@ export default StyleSheet.create({
   expenseItemButtons: {
     display: "flex",
     alignItems: "center",
-    gap: 15,
+    gap: 8,
+  },
+  expenseButton: {
+    backgroundColor: "#2d2d2d",
+    width: 35,
+    height: 35,
+    borderRadius: 5,
+    paddingLeft: 9,
+    paddingTop: 9,
   },
   noExpensesText: {
     color: "#777777",

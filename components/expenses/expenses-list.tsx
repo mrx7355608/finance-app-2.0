@@ -39,10 +39,16 @@ export default function ExpensesList({
             <Text style={styles.expenseAmount}>Rs. {String(item.amount)}</Text>
           </View>
           <View style={styles.expenseItemButtons}>
-            <TouchableOpacity onPress={() => showEditExpenseModal(item.id)}>
+            <TouchableOpacity
+              style={styles.expenseButton}
+              onPress={() => showEditExpenseModal(item.id)}
+            >
               <Feather name="edit-2" size={18} color="#64ffda" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => deleteExpense(item.id)}>
+            <TouchableOpacity
+              style={styles.expenseButton}
+              onPress={() => deleteExpense(item.id)}
+            >
               <Feather name="trash-2" size={18} color="#FF5252" />
             </TouchableOpacity>
           </View>
