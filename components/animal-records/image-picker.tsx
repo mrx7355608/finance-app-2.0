@@ -23,6 +23,7 @@ export default function ImagePickerComponent({ image, setImage }) {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.8,
+      allowsMultipleSelection: false,
     });
 
     // If user has selected an image, proceed

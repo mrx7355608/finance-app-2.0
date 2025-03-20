@@ -64,7 +64,7 @@ export default function AnimalRecordsHome() {
         <TextInput
           style={styles.input}
           onChangeText={handleSearch}
-          placeholder="Search"
+          placeholder="Type here to search"
           placeholderTextColor="#777777"
         />
       </View>
