@@ -8,10 +8,10 @@ import {
   StatusBar,
   ScrollView,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { IExpense, IRecordModel } from "@/utils/types";
 import { useServices } from "@/context/services.context";
+import { currencyFormatter } from "@/utils/currency-formatter";
 
 const ViewRecordScreen = () => {
   const { id } = useLocalSearchParams();
@@ -88,11 +88,15 @@ const ViewRecordScreen = () => {
           <View style={styles.infoCard}>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Bought Price:</Text>
-              <Text style={styles.infoValue}>Rs.{record.bought_price}</Text>
+              <Text style={styles.infoValue}>
+                {currencyFormatter(record.bought_price)}
+              </Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Sold Price:</Text>
-              <Text style={styles.infoValue}>Rs.{record.sold_price || 0}</Text>
+              <Text style={styles.infoValue}>
+                {currencyFormatter(record.sold_price || 0)}
+              </Text>
             </View>
           </View>
 
@@ -108,13 +112,17 @@ const ViewRecordScreen = () => {
                     {new Date(item.createdAt).toDateString()}
                   </Text>
                 </View>
-                <Text style={styles.expenseAmount}>-Rs.{item.amount}</Text>
+                <Text style={styles.expenseAmount}>
+                  -{currencyFormatter(item.amount)}
+                </Text>
               </View>
             ))}
 
             <View style={styles.totalExpensesRow}>
               <Text style={styles.totalExpensesLabel}>Total Expenses:</Text>
-              <Text style={styles.totalExpensesValue}>-Rs.{totalExpenses}</Text>
+              <Text style={styles.totalExpensesValue}>
+                -{currencyFormatter(totalExpenses)}
+              </Text>
             </View>
           </View>
 
@@ -128,16 +136,20 @@ const ViewRecordScreen = () => {
             <View style={styles.profitLossRow}>
               <Text style={styles.profitLossLabel}>Sold Price:</Text>
               <Text style={styles.profitLossValue}>
-                +{record.sold_price || 0}
+                +{currencyFormatter(record.sold_price || 0)}
               </Text>
             </View>
             <View style={styles.profitLossRow}>
               <Text style={styles.profitLossLabel}>Bought Price:</Text>
-              <Text style={styles.profitLossValue}>-{record.bought_price}</Text>
+              <Text style={styles.profitLossValue}>
+                -{currencyFormatter(record.bought_price)}
+              </Text>
             </View>
             <View style={styles.profitLossRow}>
               <Text style={styles.profitLossLabel}>Total Expenses:</Text>
-              <Text style={styles.profitLossValue}>-{totalExpenses}</Text>
+              <Text style={styles.profitLossValue}>
+                -{currencyFormatter(totalExpenses)}
+              </Text>
             </View>
             <View style={styles.divider} />
             <View style={styles.profitLossRow}>
@@ -156,7 +168,7 @@ const ViewRecordScreen = () => {
                 ]}
               >
                 {isProfitable ? "+" : "-"}
-                Rs.{Math.abs(profitLoss)}
+                {currencyFormatter(Math.abs(profitLoss))}
               </Text>
             </View>
           </View>

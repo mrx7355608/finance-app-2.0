@@ -41,7 +41,13 @@ export default function EditRecord() {
           data.id,
         );
         setExpenses(expensesList);
-        setRecord(data);
+        setRecord({
+          ...data,
+          bought_price: String(data.bought_price) as any,
+          sold_price: data.sold_price
+            ? data.sold_price.toString()
+            : ("" as any),
+        });
       } catch (err) {
         console.log((err as Error).message);
       } finally {
@@ -83,13 +89,13 @@ export default function EditRecord() {
     soldPrice: (newSoldPrice: string) => {
       setRecord((prev) => {
         if (!prev) return prev;
-        return { ...prev, sold_price: Number(newSoldPrice) };
+        return { ...prev, sold_price: String(newSoldPrice) };
       });
     },
     boughtPrice: (newBoughtPrice: string) => {
       setRecord((prev) => {
         if (!prev) return prev;
-        return { ...prev, bought_price: Number(newBoughtPrice) };
+        return { ...prev, bought_price: String(newBoughtPrice) };
       });
     },
   };
@@ -97,8 +103,8 @@ export default function EditRecord() {
   const updateRecord = async () => {
     await recordsService.updateRecord(record.id, {
       name: record.name,
-      sold_price: record.sold_price,
-      bought_price: record.bought_price,
+      sold_price: Number(record.sold_price),
+      bought_price: Number(record.bought_price),
       image: record.image,
     });
     router.navigate("/");
@@ -143,7 +149,7 @@ export default function EditRecord() {
             <Text style={styles.label}>Bought Price</Text>
             <TextInput
               style={styles.input}
-              value={record.bought_price ? String(record.bought_price) : ""}
+              value={record.bought_price as any}
               onChangeText={handlers.boughtPrice}
               placeholder="2000"
               placeholderTextColor="#777777"
@@ -157,7 +163,7 @@ export default function EditRecord() {
             <Text style={styles.label}>Sold Price</Text>
             <TextInput
               style={styles.input}
-              value={record.sold_price ? String(record.sold_price) : ""}
+              value={record.sold_price as any}
               onChangeText={handlers.soldPrice}
               placeholder="2000"
               placeholderTextColor="#777777"
