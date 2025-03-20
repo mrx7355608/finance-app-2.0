@@ -16,6 +16,9 @@ import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "@/components/animal-records/image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useServices } from "@/context/services.context";
+import SubmitButton from "@/components/ui/submit-button";
+import Input from "@/components/ui/input";
+import { ZodError } from "zod";
 
 export default function EditRecord() {
   const { id } = useLocalSearchParams();
@@ -41,13 +44,7 @@ export default function EditRecord() {
           data.id,
         );
         setExpenses(expensesList);
-        setRecord({
-          ...data,
-          bought_price: String(data.bought_price) as any,
-          sold_price: data.sold_price
-            ? data.sold_price.toString()
-            : ("" as any),
-        });
+        setRecord(data);
       } catch (err) {
         console.log((err as Error).message);
       } finally {
@@ -101,13 +98,21 @@ export default function EditRecord() {
   };
 
   const updateRecord = async () => {
-    await recordsService.updateRecord(record.id, {
-      name: record.name,
-      sold_price: Number(record.sold_price),
-      bought_price: Number(record.bought_price),
-      image: record.image,
-    });
-    router.navigate("/");
+    try {
+      await recordsService.updateRecord(record.id, {
+        name: record.name,
+        sold_price: Number(record.sold_price),
+        bought_price: Number(record.bought_price),
+        image: record.image,
+      });
+      router.navigate("/");
+    } catch (err) {
+      if (err instanceof ZodError) {
+        err.errors.forEach((e) => {
+          setErrors((prev) => ({ ...prev, [e.path[0]]: e.message }));
+        });
+      }
+    }
   };
 
   return (
@@ -132,51 +137,35 @@ export default function EditRecord() {
           )}
 
           {/* INPUTS */}
-          <View style={styles.formSection}>
-            <Text style={styles.label}>Animal Name</Text>
-            <TextInput
-              style={styles.input}
-              value={record.name}
-              onChangeText={handlers.name}
-              placeholder="Enter animal name"
-              placeholderTextColor="#777777"
-            />
-            {errors.name && (
-              <Text style={styles.errorMessage}>{errors.name}</Text>
-            )}
-          </View>
-          <View style={styles.formSection}>
-            <Text style={styles.label}>Bought Price</Text>
-            <TextInput
-              style={styles.input}
-              value={record.bought_price as any}
-              onChangeText={handlers.boughtPrice}
-              placeholder="2000"
-              placeholderTextColor="#777777"
-              inputMode="numeric"
-            />
-            {errors.bought_price && (
-              <Text style={styles.errorMessage}>{errors.bought_price}</Text>
-            )}
-          </View>
-          <View style={styles.formSection}>
-            <Text style={styles.label}>Sold Price</Text>
-            <TextInput
-              style={styles.input}
-              value={record.sold_price as any}
-              onChangeText={handlers.soldPrice}
-              placeholder="2000"
-              placeholderTextColor="#777777"
-              inputMode="numeric"
-            />
-            {errors.sold_price && (
-              <Text style={styles.errorMessage}>{errors.sold_price}</Text>
-            )}
-          </View>
+          <Input
+            label="Animal Name"
+            value={record.name}
+            placeholder="Enter animal name"
+            error={errors.name}
+            inputMode="text"
+            handleChange={handlers.name}
+          />
+          <Input
+            label="Bought Price"
+            value={record.bought_price.toString()}
+            placeholder="2000"
+            error={errors.bought_price}
+            handleChange={handlers.boughtPrice}
+          />
+          <Input
+            label="Sold Price"
+            value={record.sold_price?.toString() || ""}
+            placeholder="2000"
+            error={errors.sold_price}
+            handleChange={handlers.soldPrice}
+          />
 
           {/* ##### EXPENSES SECTION ##### */}
           <View style={styles.sectionHeader}>
+            {/* HEADING */}
             <Text style={styles.formTitle2}>Expenses</Text>
+
+            {/* ADD EXPENSE BUTTON */}
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setModalVisible(true)}
@@ -192,11 +181,14 @@ export default function EditRecord() {
           ) : (
             <Text style={styles.noExpensesText}>No expenses added yet</Text>
           )}
+
           {/* SAVE RECORD BUTTON */}
-          <TouchableOpacity style={styles.saveButton} onPress={updateRecord}>
-            <Feather name="save" size={18} color="#121212" />
-            <Text style={styles.saveButtonText}>Save Record</Text>
-          </TouchableOpacity>
+          <SubmitButton
+            text="Save Record"
+            loading={loading}
+            loadingText="Saving..."
+            handlePress={updateRecord}
+          />
         </ScrollView>
 
         {/* EXPENSES MODAL */}
