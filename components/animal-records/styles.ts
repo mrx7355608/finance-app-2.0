@@ -32,22 +32,6 @@ export default StyleSheet.create({
     marginTop: 20,
   },
 
-  // Text and input styles
-  label: {
-    fontSize: 16,
-    color: "#FFFFFF",
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: "#1E1E1E",
-    borderWidth: 1,
-    borderColor: "#333333",
-    borderRadius: 4,
-    color: "#FFFFFF",
-    padding: 12,
-    fontSize: 16,
-  },
-
   // Button styles
   addButton: {
     flexDirection: "row",

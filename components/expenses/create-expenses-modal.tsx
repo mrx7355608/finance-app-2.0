@@ -12,6 +12,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import styles from "../animal-records/styles";
 import { IExpenseInput } from "@/utils/types";
+import Input from "../ui/input";
 
 interface Props {
   visible: boolean;
@@ -65,31 +66,23 @@ export default function CreateExpenseModal({
           </View>
 
           <View style={styles.modalBody}>
-            <View style={styles.formSection}>
-              {error && <Text style={styles.errorMessage}>{error}</Text>}
-              <Text style={styles.label}>Item</Text>
-              <TextInput
-                style={styles.input}
-                value={item}
-                onChangeText={setItem}
-                placeholder="Enter expense item"
-                placeholderTextColor="#777777"
-              />
-            </View>
-
-            <View style={styles.formSection}>
-              <Text style={styles.label}>Amount</Text>
-              <TextInput
-                style={styles.input}
-                value={amount}
-                onChangeText={setAmount}
-                placeholder="100"
-                placeholderTextColor="#777777"
-                inputMode="numeric"
-              />
-            </View>
+            {error && <Text style={styles.errorMessage}>{error}</Text>}
+            <Input
+              label="Item"
+              value={item}
+              placeholder="Enter expense item"
+              handleChange={setItem}
+              inputMode="text"
+            />
+            <Input
+              label="Amount"
+              value={amount}
+              placeholder="100"
+              handleChange={setAmount}
+            />
           </View>
 
+          {/* BUTTONS */}
           <View style={styles.modalFooter}>
             <TouchableOpacity
               style={styles.modalCancelButton}
