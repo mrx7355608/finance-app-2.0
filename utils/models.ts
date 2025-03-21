@@ -3,7 +3,7 @@ import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const recordsTable = sqliteTable("records", {
   id: int().primaryKey({ autoIncrement: true }),
   name: text().notNull(),
-  image: text().notNull(),
+  images: text({ mode: "json" }).notNull(),
   bought_price: int().notNull(),
   sold_price: int().default(0),
   createdAt: text().notNull(),

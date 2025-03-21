@@ -24,7 +24,7 @@ export default function AnimalRecordsItem({
 
   return (
     <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image source={{ uri: item.images[0] }} style={styles.image} />
       <View style={styles.cardContent}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.date}>Created on {formattedDate}</Text>

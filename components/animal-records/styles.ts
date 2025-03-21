@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 
 export default StyleSheet.create({
   // Container styles
@@ -161,9 +161,11 @@ export default StyleSheet.create({
     position: "relative",
   },
   imagePreview: {
-    width: "100%",
+    width: Dimensions.get("screen").width - 35,
+    margin: 1,
     height: 200,
     borderRadius: 4,
+    objectFit: "cover",
   },
   changeImageButton: {
     position: "absolute",

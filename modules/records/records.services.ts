@@ -12,7 +12,7 @@ export const createRecordsService = (recordsRepo: IRecordsRepo) => {
     const validated = recordSchema.parse(input);
 
     const result = await insert({
-      image: validated.image,
+      images: validated.images,
       name: validated.name,
       bought_price: validated.bought_price,
       sold_price: validated.sold_price ?? undefined,

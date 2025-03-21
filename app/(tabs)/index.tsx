@@ -36,9 +36,8 @@ export default function AnimalRecordsHome() {
   );
 
   const debouncedSearch = debounce((query) => {
-    console.log(query);
     setSearch(query);
-  }, 500);
+  }, 300);
 
   const handleSearch = (val: string) => {
     debouncedSearch(val);
@@ -75,7 +74,7 @@ export default function AnimalRecordsHome() {
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
             <AnimalRecordsItem
-              item={item}
+              item={item as IRecordModel}
               onView={() => handleView(item.id)}
               onEdit={() => handleEdit(item.id)}
               onDelete={handleDelete}

@@ -26,17 +26,16 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
    * CREATE: Add a new record
    */
   const insert = async (data: IRecordInput) => {
-    const { image, name, bought_price, sold_price } = data;
+    const { images, name, bought_price, sold_price } = data;
 
     const record = await db.insert(recordsTable).values({
-      image,
+      images,
       name,
       bought_price,
       sold_price,
       createdAt: new Date().toISOString(),
     });
 
-    console.log("asambhav!");
     return record;
   };
 

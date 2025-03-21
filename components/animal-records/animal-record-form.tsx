@@ -12,12 +12,12 @@ export default function AddRecordForm() {
   const [name, setName] = useState("");
   const [boughtPrice, setBoughtPrice] = useState("");
   const [soldPrice, setSoldPrice] = useState("");
-  const [imageUri, setImageUri] = useState<string>("");
+  const [imageURIs, setImageURIs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { recordsService } = useServices();
   const [errors, setErrors] = useState({
     name: "",
-    image: "",
+    images: "",
     sold_price: "",
     bought_price: "",
   });
@@ -25,14 +25,22 @@ export default function AddRecordForm() {
 
   const saveRecord = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const data = {
         name,
         sold_price: Number(soldPrice),
         bought_price: Number(boughtPrice),
-        image: imageUri,
+        images: imageURIs,
       };
+      console.log(data);
       await recordsService.createRecord(data);
+
+      // Reset form
+      setName("");
+      setSoldPrice("");
+      setBoughtPrice("");
+      setImageURIs([]);
+      router.navigate("/");
     } catch (err) {
       if (err instanceof ZodError) {
         err.errors.forEach((e) => {
@@ -40,12 +48,7 @@ export default function AddRecordForm() {
         });
       }
     } finally {
-      setName("");
-      setSoldPrice("");
-      setBoughtPrice("");
-      setImageUri("");
       setLoading(false);
-      router.navigate("/");
     }
   };
 
@@ -59,11 +62,11 @@ export default function AddRecordForm() {
       >
         {/* IMAGE PICKER */}
         <View style={styles.formSection}>
-          <ImagePickerComponent setImage={setImageUri} image={imageUri} />
+          <ImagePickerComponent setImage={setImageURIs} image={imageURIs} />
+          {errors.images && (
+            <Text style={styles.errorMessage}>{errors.images}</Text>
+          )}
         </View>
-        {errors.image && (
-          <Text style={styles.errorMessage}>{errors.image}</Text>
-        )}
 
         {/* INPUTS */}
         <Input

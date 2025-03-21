@@ -7,11 +7,13 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  FlatList,
 } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { IExpense, IRecordModel } from "@/utils/types";
 import { useServices } from "@/context/services.context";
 import { currencyFormatter } from "@/utils/currency-formatter";
+import styles2 from "@/components/animal-records/styles";
 
 const ViewRecordScreen = () => {
   const { id } = useLocalSearchParams();
@@ -29,7 +31,7 @@ const ViewRecordScreen = () => {
           data.id,
         );
         setExpenses(expensesList);
-        setRecord(data);
+        setRecord(data as IRecordModel);
       } catch (err) {
         console.log((err as Error).message);
       } finally {
@@ -68,11 +70,25 @@ const ViewRecordScreen = () => {
 
         <ScrollView>
           {/* Animal Image */}
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: record.image }}
-              style={styles.animalImage}
-              resizeMode="cover"
+          <View style={styles2.imagePreviewContainer}>
+            <FlatList
+              data={record.images}
+              horizontal
+              showsHorizontalScrollIndicator={true}
+              pagingEnabled
+              decelerationRate="normal"
+              snapToAlignment="center"
+              keyExtractor={(_item, index) => index.toString()}
+              renderItem={({ item }) => {
+                return (
+                  <>
+                    <Image
+                      source={{ uri: item }}
+                      style={styles2.imagePreview}
+                    />
+                  </>
+                );
+              }}
             />
           </View>
 
@@ -202,6 +218,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 5,
+    marginTop: 20,
   },
   imageContainer: {
     alignItems: "center",

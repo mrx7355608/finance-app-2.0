@@ -2,12 +2,15 @@ import { z } from "zod";
 
 // ✅ Validation schema for creating or updating a record
 export const recordSchema = z.object({
-  image: z
-    .string({
-      required_error: "Image is missing",
-      invalid_type_error: "Invalid image",
-    })
-    .min(1, { message: "Image is missing" }),
+  images: z
+    .array(
+      z.string({
+        required_error: "Image URL is required",
+        invalid_type_error: "Image must be a string",
+      }),
+    )
+    .min(1, { message: "At least 1 image is required" })
+    .max(10, { message: "Maximum of 10 images allowed" }),
 
   name: z
     .string({
