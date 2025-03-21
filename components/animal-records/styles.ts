@@ -140,7 +140,7 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderColor: "#333333",
     borderRadius: 4,
-    height: 180,
+    height: 80,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -149,7 +149,6 @@ export default StyleSheet.create({
   imagePickerButton: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 16,
     flex: 1,
   },
   imagePickerText: {
@@ -166,6 +165,17 @@ export default StyleSheet.create({
     height: 200,
     borderRadius: 4,
     objectFit: "cover",
+  },
+  removeImageButton: {
+    position: "absolute",
+    bottom: 50,
+    right: 10,
+    backgroundColor: "#d21404",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
   },
   changeImageButton: {
     position: "absolute",

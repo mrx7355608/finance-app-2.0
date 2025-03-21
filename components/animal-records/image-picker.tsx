@@ -12,6 +12,12 @@ import * as ImagePicker from "expo-image-picker";
 import styles from "./styles";
 
 export default function ImagePickerComponent({ image, setImage }) {
+  const removeImage = (imageURL: string) => {
+    setImage((prev: string[]) =>
+      prev.filter((img: string) => img !== imageURL),
+    );
+  };
+
   const updateImage = async (index: number) => {
     // Request permissions
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -66,7 +72,10 @@ export default function ImagePickerComponent({ image, setImage }) {
 
     // If user has selected an image, proceed
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImage(result.assets.map((images) => images.uri));
+      setImage((prev: string[]) => [
+        ...prev,
+        ...result.assets!.map((img) => img.uri),
+      ]);
     }
   };
 
@@ -90,13 +99,16 @@ export default function ImagePickerComponent({ image, setImage }) {
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImage(result.assets.map((imgs) => imgs.uri));
+      setImage((prev: string[]) => [
+        ...prev,
+        ...result.assets!.map((img) => img.uri),
+      ]);
     }
   };
 
   return (
     <View>
-      {image && image.length > 0 ? (
+      {image && image.length > 0 && (
         <View style={styles.imagePreviewContainer}>
           <FlatList
             data={image}
@@ -110,6 +122,19 @@ export default function ImagePickerComponent({ image, setImage }) {
               return (
                 <>
                   <Image source={{ uri: item }} style={styles.imagePreview} />
+
+                  {/* REMOVE BUTTON */}
+                  <TouchableOpacity
+                    style={styles.removeImageButton}
+                    onPress={() => removeImage(item)}
+                  >
+                    <Feather name="trash-2" size={16} color="white" />
+                    <Text style={{ ...styles.changeImageText, color: "white" }}>
+                      Remove
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* CHANGE BUTTON */}
                   <TouchableOpacity
                     style={styles.changeImageButton}
                     onPress={() => updateImage(index)}
@@ -122,25 +147,20 @@ export default function ImagePickerComponent({ image, setImage }) {
             }}
           />
         </View>
-      ) : (
-        <View style={styles.imagePickerPlaceholder}>
-          <TouchableOpacity
-            style={styles.imagePickerButton}
-            onPress={pickImage}
-          >
-            <Feather name="image" size={24} color="#AAAAAA" />
-            <Text style={styles.imagePickerText}>Select from Gallery</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.imagePickerButton}
-            onPress={takePhoto}
-          >
-            <Feather name="camera" size={24} color="#AAAAAA" />
-            <Text style={styles.imagePickerText}>Take Photo</Text>
-          </TouchableOpacity>
-        </View>
       )}
+
+      {/* IMAGE PICK OPTIONS */}
+      <View style={styles.imagePickerPlaceholder}>
+        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+          <Feather name="image" size={20} color="#AAAAAA" />
+          <Text style={styles.imagePickerText}>Gallery</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.imagePickerButton} onPress={takePhoto}>
+          <Feather name="camera" size={20} color="#AAAAAA" />
+          <Text style={styles.imagePickerText}>Camera</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* DISPLAY TOTAL IMAGES COUNT */}
       <View style={{ ...styles.sectionHeader, marginBottom: 0 }}>

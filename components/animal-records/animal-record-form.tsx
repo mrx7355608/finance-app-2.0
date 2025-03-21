@@ -32,7 +32,6 @@ export default function AddRecordForm() {
         bought_price: Number(boughtPrice),
         images: imageURIs,
       };
-      console.log(data);
       await recordsService.createRecord(data);
 
       // Reset form
@@ -40,6 +39,7 @@ export default function AddRecordForm() {
       setSoldPrice("");
       setBoughtPrice("");
       setImageURIs([]);
+      setErrors({ name: "", images: "", bought_price: "", sold_price: "" });
       router.navigate("/");
     } catch (err) {
       if (err instanceof ZodError) {
@@ -48,6 +48,11 @@ export default function AddRecordForm() {
         });
       }
     } finally {
+      setTimeout(
+        () =>
+          setErrors({ name: "", images: "", bought_price: "", sold_price: "" }),
+        8000,
+      );
       setLoading(false);
     }
   };
