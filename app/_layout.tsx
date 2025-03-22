@@ -20,6 +20,7 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { db } from "@/utils/db";
 import migrations from "../drizzle/migrations";
 import ServicesProvider from "@/context/services.context";
+import { sync } from "@/utils/sync";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -38,6 +39,7 @@ export default function RootLayout() {
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
+    sync();
     if (error) throw error;
     if (error2) throw error2;
   }, [error]);

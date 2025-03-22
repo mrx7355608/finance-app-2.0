@@ -27,6 +27,7 @@ export default function EditRecord() {
   const [expenses, setExpenses] = useState<IExpense[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [record, setRecord] = useState<IRecordModel | null>(null);
+  const [images, setImages] = useState<string[]>();
   const [errors, setErrors] = useState({
     name: "",
     image: "",
@@ -45,6 +46,7 @@ export default function EditRecord() {
         );
         setExpenses(expensesList);
         setRecord(data);
+        setImages(data.images as string[]);
       } catch (err) {
         console.log((err as Error).message);
       } finally {
@@ -77,12 +79,6 @@ export default function EditRecord() {
         return { ...prev, name };
       });
     },
-    image: (newImage: string) => {
-      setRecord((prev) => {
-        if (!prev) return prev;
-        return { ...prev, image: newImage };
-      });
-    },
     soldPrice: (newSoldPrice: string) => {
       setRecord((prev) => {
         if (!prev) return prev;
@@ -103,7 +99,7 @@ export default function EditRecord() {
         name: record.name,
         sold_price: Number(record.sold_price),
         bought_price: Number(record.bought_price),
-        image: record.image,
+        images: images,
       });
       router.navigate("/");
     } catch (err) {
@@ -127,10 +123,7 @@ export default function EditRecord() {
         >
           {/* IMAGE PICKER */}
           <View style={styles.formSection}>
-            <ImagePickerComponent
-              image={record.image}
-              setImage={handlers.image}
-            />
+            <ImagePickerComponent image={images} setImage={setImages} />
           </View>
           {errors.image && (
             <Text style={styles.errorMessage}>{errors.image}</Text>
