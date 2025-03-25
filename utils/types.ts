@@ -8,6 +8,7 @@ export type IRecordInput = {
 export interface IRecordModel extends IRecordInput {
   id: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface IExpenseInput {

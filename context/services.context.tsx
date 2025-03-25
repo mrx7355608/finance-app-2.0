@@ -3,7 +3,7 @@ import { createExpenseService } from "@/modules/expenses/expenses.services";
 import { createRecordsRepo } from "@/modules/records/records-data";
 import { createRecordsService } from "@/modules/records/records.services";
 import { ReactNode, createContext, useContext } from "react";
-import { db } from "@/utils/db";
+import db from "@/utils/db";
 
 const recordsRepo = createRecordsRepo(db);
 const expenseRepo = createExpensesRepo(db);

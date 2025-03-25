@@ -30,7 +30,6 @@ export const createRecordsService = (recordsRepo: IRecordsRepo) => {
   const getAllRecords = async () => {
     const allRecords = await findAll();
     return {
-      message: `Fetched ${allRecords.length} record(s).`,
       data: allRecords,
     };
   };
