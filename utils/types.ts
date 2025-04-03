@@ -21,3 +21,12 @@ export interface IExpense extends IExpenseInput {
   id: number;
   createdAt: string;
 }
+
+export interface Database {
+  public: {
+    Tables: {
+      records: { Row: IRecordModel };
+      expenses: { Row: IExpense };
+    };
+  };
+}

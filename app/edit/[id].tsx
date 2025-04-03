@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
@@ -99,7 +98,7 @@ export default function EditRecord() {
         name: record.name,
         sold_price: Number(record.sold_price),
         bought_price: Number(record.bought_price),
-        images: images,
+        images: images as string[],
       });
       router.navigate("/");
     } catch (err) {

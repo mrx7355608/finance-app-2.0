@@ -17,7 +17,7 @@ export const createRecordsRepo = (db: SupabaseClient) => {
       .eq("id", recordId)
       .single();
 
-    return record;
+    return record.data;
   };
 
   /**
@@ -34,7 +34,7 @@ export const createRecordsRepo = (db: SupabaseClient) => {
       createdAt: new Date().toISOString(),
     });
 
-    return record;
+    return record.data;
   };
 
   /**
@@ -43,7 +43,7 @@ export const createRecordsRepo = (db: SupabaseClient) => {
   const findAll = async () => {
     const allRecords = await db.from("records").select();
     console.log("All records:", allRecords);
-    return allRecords;
+    return allRecords.data;
   };
 
   /**
@@ -56,7 +56,7 @@ export const createRecordsRepo = (db: SupabaseClient) => {
       .eq("id", recordId)
       .single();
 
-    return result;
+    return result.data;
   };
 
   /**
@@ -68,7 +68,7 @@ export const createRecordsRepo = (db: SupabaseClient) => {
       .update({ ...newData, updatedAt: new Date().toISOString() })
       .eq("id", recordId);
 
-    return result;
+    return result.data;
   };
 
   /**

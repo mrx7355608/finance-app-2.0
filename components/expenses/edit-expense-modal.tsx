@@ -1,17 +1,8 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  View,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from "react-native";
+import { Modal, View, ScrollView, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "../animal-records/styles";
-import { IExpense, IExpenseInput } from "@/utils/types";
+import { IExpense } from "@/utils/types";
 import Input from "../ui/input";
 
 interface Props {

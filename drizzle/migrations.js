@@ -6,6 +6,8 @@ import m0001 from './0001_normal_ender_wiggin.sql';
 import m0002 from './0002_public_lady_bullseye.sql';
 import m0003 from './0003_concerned_bullseye.sql';
 import m0004 from './0004_brown_loa.sql';
+import m0005 from './0005_real_marauders.sql';
+import m0006 from './0006_many_demogoblin.sql';
 
   export default {
     journal,
@@ -14,7 +16,9 @@ import m0004 from './0004_brown_loa.sql';
 m0001,
 m0002,
 m0003,
-m0004
+m0004,
+m0005,
+m0006
     }
   }
   

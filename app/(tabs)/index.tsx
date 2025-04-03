@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   StyleSheet,
   FlatList,
@@ -11,13 +11,11 @@ import {
 import AnimalRecordsItem from "@/components/animal-records/animal-records-item";
 import DeleteConfirmationModal from "@/components/animal-records/delete-confirmation-modal";
 import { IRecordModel } from "@/utils/types";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { db } from "@/utils/db";
-import { recordsTable } from "@/utils/models";
+import db from "@/utils/db";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { desc, like } from "drizzle-orm";
 import { debounce } from "lodash";
+import useRealtimePosts from "@/hooks/useRealtimeData";
 
 export default function AnimalRecordsHome() {
   const [recordToDelete, setRecordToDelete] = useState<IRecordModel | null>(
@@ -25,15 +23,20 @@ export default function AnimalRecordsHome() {
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [search, setSearch] = useState("");
+  const [data, setData] = useState([]);
   const router = useRouter();
-  let { data } = useLiveQuery(
-    db
+  // useRealtimePosts();
+  // let { data } = useLiveQuery(db.from("records").select());
+
+  useEffect(() => {
+    console.log("fetching...");
+    db.from("records")
       .select()
-      .from(recordsTable)
-      .where(like(recordsTable.name, `%${search}%`))
-      .orderBy(desc(recordsTable.createdAt)),
-    [search],
-  );
+      .ilike("name", `%${search}%`)
+      .then((res) => {
+        setData(res.data);
+      });
+  }, []);
 
   const debouncedSearch = debounce((query) => {
     setSearch(query);
