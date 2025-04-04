@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   FlatList,
@@ -16,6 +16,7 @@ import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { debounce } from "lodash";
 import useRealtimePosts from "@/hooks/useRealtimeData";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 export default function AnimalRecordsHome() {
   const [recordToDelete, setRecordToDelete] = useState<IRecordModel | null>(
@@ -23,20 +24,42 @@ export default function AnimalRecordsHome() {
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [search, setSearch] = useState("");
-  const [data, setData] = useState([]);
+  const [records, setRecords] = useState<IRecordModel[]>([]);
+  const [data, setData] = useState<IRecordModel[]>([]);
   const router = useRouter();
-  // useRealtimePosts();
-  // let { data } = useLiveQuery(db.from("records").select());
+
+  // Callback for realtime data hook
+  const callback = (
+    payload: RealtimePostgresChangesPayload<{
+      [key: string]: any;
+    }>,
+  ) => {
+    if (payload.eventType === "INSERT") {
+      console.log(payload.new);
+      setRecords((prev) => [...prev, payload.new as IRecordModel]);
+      setData((prev) => [...prev, payload.new as IRecordModel]);
+    }
+  };
+
+  useRealtimePosts(callback);
 
   useEffect(() => {
     console.log("fetching...");
     db.from("records")
       .select()
-      .ilike("name", `%${search}%`)
       .then((res) => {
-        setData(res.data);
+        setData(res.data!);
+        setRecords(res.data!);
       });
   }, []);
+
+  useEffect(() => {
+    setData(
+      records.filter((rec) =>
+        rec.name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    );
+  }, [search]);
 
   const debouncedSearch = debounce((query) => {
     setSearch(query);
