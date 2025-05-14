@@ -16,9 +16,6 @@ export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { db } from "@/utils/db";
-import migrations from "../drizzle/migrations";
 import ServicesProvider from "@/context/services.context";
 
 export const unstable_settings = {
@@ -34,12 +31,10 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
-  const { success, error: error2 } = useMigrations(db, migrations); // Perform migrations
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
-    if (error2) throw error2;
   }, [error]);
 
   useEffect(() => {
@@ -48,7 +43,7 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded && !success) {
+  if (!loaded) {
     return null;
   }
 

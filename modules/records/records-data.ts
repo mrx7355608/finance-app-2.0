@@ -1,10 +1,8 @@
 // record.service.ts
-import { eq } from "drizzle-orm";
-import { expensesTable, recordsTable } from "../../utils/models";
-import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { IRecordInput } from "../../utils/types";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
+export const createRecordsRepo = (db: SupabaseClient) => {
   /**
    * Check if a record exists by ID
    */
@@ -14,12 +12,12 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
     }
 
     const record = await db
-      .select({ id: recordsTable.id })
-      .from(recordsTable)
-      .where(eq(recordsTable.id, recordId))
-      .limit(1);
+      .from("records")
+      .select()
+      .eq("id", recordId)
+      .single();
 
-    return record[0];
+    return record.data;
   };
 
   /**
@@ -28,7 +26,7 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
   const insert = async (data: IRecordInput) => {
     const { images, name, bought_price, sold_price } = data;
 
-    const record = await db.insert(recordsTable).values({
+    const record = await db.from("records").insert({
       images,
       name,
       bought_price,
@@ -36,16 +34,16 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
       createdAt: new Date().toISOString(),
     });
 
-    return record;
+    return record.data;
   };
 
   /**
    * READ: Get all records
    */
   const findAll = async () => {
-    const allRecords = await db.select().from(recordsTable);
+    const allRecords = await db.from("records").select();
     console.log("All records:", allRecords);
-    return allRecords;
+    return allRecords.data;
   };
 
   /**
@@ -53,35 +51,35 @@ export const createRecordsRepo = (db: ExpoSQLiteDatabase) => {
    */
   const findById = async (recordId: number) => {
     const result = await db
+      .from("records")
       .select()
-      .from(recordsTable)
-      .where(eq(recordsTable.id, recordId));
+      .eq("id", recordId)
+      .single();
 
-    return result[0]; // Returns the single record or undefined
+    return result.data;
   };
 
   /**
-   * UPDATE: Update sold price by record ID
+   * UPDATE: Update expense by record ID
    */
   const editRecord = async (recordId: number, newData: IRecordInput) => {
     const result = await db
-      .update(recordsTable)
-      .set({ ...newData })
-      .where(eq(recordsTable.id, recordId))
-      .returning();
+      .from("records")
+      .update({ ...newData, updatedAt: new Date().toISOString() })
+      .eq("id", recordId);
 
-    return result[0];
+    return result.data;
   };
 
   /**
    * DELETE: Delete a record by ID
    */
   const remove = async (recordId: number) => {
-    await db.delete(recordsTable).where(eq(recordsTable.id, recordId));
+    await db.from("records").delete().eq("id", recordId);
     console.log(`Record ${recordId} deleted.`);
 
     // Remove the expenses that are related to this record
-    await db.delete(expensesTable).where(eq(expensesTable.recordId, recordId));
+    await db.from("expenses").delete().eq("recordId", recordId);
     console.log(`Deleted all expenses associated with ${recordId}.`);
   };
 

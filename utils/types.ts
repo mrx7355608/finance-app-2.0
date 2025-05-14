@@ -8,6 +8,7 @@ export type IRecordInput = {
 export interface IRecordModel extends IRecordInput {
   id: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface IExpenseInput {
@@ -19,4 +20,13 @@ export interface IExpenseInput {
 export interface IExpense extends IExpenseInput {
   id: number;
   createdAt: string;
+}
+
+export interface Database {
+  public: {
+    Tables: {
+      records: { Row: IRecordModel };
+      expenses: { Row: IExpense };
+    };
+  };
 }

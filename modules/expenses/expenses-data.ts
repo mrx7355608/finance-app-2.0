@@ -1,45 +1,34 @@
-import { expensesTable } from "../../utils/models"; // your schema
-import { eq } from "drizzle-orm";
 import { IExpenseInput } from "../../utils/types";
-import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 // Factory function for Expenses CRUD operations
-export const createExpensesRepo = (db: ExpoSQLiteDatabase) => {
+export const createExpensesRepo = (db: SupabaseClient) => {
   /**
    * Check if an expense exists by ID
    */
   const expenseExists = async (id: number) => {
-    const expense = await db
-      .select({ id: expensesTable.id })
-      .from(expensesTable)
-      .where(eq(expensesTable.id, id))
-      .limit(1);
-
-    return expense[0];
+    return await db.from("expenses").select().eq("id", id).single();
   };
 
   /**
    * Create an expense record
    */
   const insertExpense = async ({ name, amount, recordId }: IExpenseInput) => {
-    const result = await db
-      .insert(expensesTable)
-      .values({
-        name,
-        amount,
-        recordId,
-        createdAt: new Date().toISOString(),
-      })
-      .returning();
+    const result = await db.from("expenses").insert({
+      name,
+      amount,
+      recordId,
+      createdAt: new Date().toISOString(),
+    });
 
-    return result[0];
+    return result;
   };
 
   /**
    * Get all expenses
    */
   const findAllExpenses = async () => {
-    const result = await db.select().from(expensesTable);
+    const result = await db.from("expenses").select();
     return result;
   };
 
@@ -47,25 +36,14 @@ export const createExpensesRepo = (db: ExpoSQLiteDatabase) => {
    * Get a single expense by ID
    */
   const findExpenseById = async (id: number) => {
-    const result = await db
-      .select()
-      .from(expensesTable)
-      .where(eq(expensesTable.id, id))
-      .limit(1);
-
-    return result[0] || null;
+    return await db.from("expenses").select().eq("id", id).single();
   };
 
   /**
    * Get all expenses related to a specific recordId
    */
   const findExpensesByRecordId = async (recordId: number) => {
-    const result = await db
-      .select()
-      .from(expensesTable)
-      .where(eq(expensesTable.recordId, recordId));
-
-    return result;
+    return await db.from("expenses").select().eq("recordId", recordId);
   };
 
   /**
@@ -77,22 +55,22 @@ export const createExpensesRepo = (db: ExpoSQLiteDatabase) => {
     newName: string,
   ) => {
     const result = await db
-      .update(expensesTable)
-      .set({ amount: newAmount, name: newName })
-      .where(eq(expensesTable.id, id))
-      .returning();
+      .from("expenses")
+      .update({
+        amount: newAmount,
+        name: newName,
+        updatedAt: new Date().toISOString(),
+      })
+      .eq("id", id);
 
-    return result[0];
+    return result;
   };
 
   /**
    * Delete expense by ID
    */
   const removeExpense = async (id: number) => {
-    const result = await db
-      .delete(expensesTable)
-      .where(eq(expensesTable.id, id));
-
+    const result = await db.from("expenses").delete().eq("id", id);
     return result;
   };
 

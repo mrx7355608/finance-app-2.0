@@ -25,7 +25,8 @@ export default function AddRecordForm() {
 
   const saveRecord = async () => {
     try {
-      // setLoading(true);
+      setLoading(true);
+
       const data = {
         name,
         sold_price: Number(soldPrice),

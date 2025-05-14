@@ -1,6 +1,7 @@
 import { recordSchema } from "./records.validation";
 import { IRecordInput } from "../../utils/types";
 import { IRecordsRepo } from "./records-data";
+import { uploadImagesToCloudinary } from "../cloudinary/cloudinary.services";
 
 export const createRecordsService = (recordsRepo: IRecordsRepo) => {
   const { insert, findAll, findById, editRecord, remove } = recordsRepo;
@@ -11,8 +12,9 @@ export const createRecordsService = (recordsRepo: IRecordsRepo) => {
   const createRecord = async (input: IRecordInput) => {
     const validated = recordSchema.parse(input);
 
+    const uploadedLinks = await uploadImagesToCloudinary(input.images);
     const result = await insert({
-      images: validated.images,
+      images: uploadedLinks,
       name: validated.name,
       bought_price: validated.bought_price,
       sold_price: validated.sold_price ?? undefined,
@@ -30,7 +32,6 @@ export const createRecordsService = (recordsRepo: IRecordsRepo) => {
   const getAllRecords = async () => {
     const allRecords = await findAll();
     return {
-      message: `Fetched ${allRecords.length} record(s).`,
       data: allRecords,
     };
   };
@@ -76,6 +77,10 @@ export const createRecordsService = (recordsRepo: IRecordsRepo) => {
     }
 
     await remove(recordId);
+
+    if (!existing.images || existing.images.length < 1) {
+      console.log("Images missing!");
+    }
 
     return { message: `Record ${recordId} has been deleted.` };
   };

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   FlatList,
@@ -11,13 +11,12 @@ import {
 import AnimalRecordsItem from "@/components/animal-records/animal-records-item";
 import DeleteConfirmationModal from "@/components/animal-records/delete-confirmation-modal";
 import { IRecordModel } from "@/utils/types";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { db } from "@/utils/db";
-import { recordsTable } from "@/utils/models";
+import db from "@/utils/db";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { desc, like } from "drizzle-orm";
 import { debounce } from "lodash";
+import useRealtimePosts from "@/hooks/useRealtimeData";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 export default function AnimalRecordsHome() {
   const [recordToDelete, setRecordToDelete] = useState<IRecordModel | null>(
@@ -25,15 +24,42 @@ export default function AnimalRecordsHome() {
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [search, setSearch] = useState("");
+  const [records, setRecords] = useState<IRecordModel[]>([]);
+  const [data, setData] = useState<IRecordModel[]>([]);
   const router = useRouter();
-  let { data } = useLiveQuery(
-    db
+
+  // Callback for realtime data hook
+  const callback = (
+    payload: RealtimePostgresChangesPayload<{
+      [key: string]: any;
+    }>,
+  ) => {
+    if (payload.eventType === "INSERT") {
+      console.log(payload.new);
+      setRecords((prev) => [...prev, payload.new as IRecordModel]);
+      setData((prev) => [...prev, payload.new as IRecordModel]);
+    }
+  };
+
+  useRealtimePosts(callback);
+
+  useEffect(() => {
+    console.log("fetching...");
+    db.from("records")
       .select()
-      .from(recordsTable)
-      .where(like(recordsTable.name, `%${search}%`))
-      .orderBy(desc(recordsTable.createdAt)),
-    [search],
-  );
+      .then((res) => {
+        setData(res.data!);
+        setRecords(res.data!);
+      });
+  }, []);
+
+  useEffect(() => {
+    setData(
+      records.filter((rec) =>
+        rec.name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    );
+  }, [search]);
 
   const debouncedSearch = debounce((query) => {
     setSearch(query);
