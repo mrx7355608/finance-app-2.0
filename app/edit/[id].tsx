@@ -121,6 +121,10 @@ export default function EditRecord() {
 
   const handleAddExpense = async (newExpense: IExpenseInput) => {
     const expense = await expenseService.createExpense(newExpense);
+    if (!expense) {
+      alert("Unable to add expense");
+      return;
+    }
     setExpenses((prev) => [...prev, expense]);
   };
 

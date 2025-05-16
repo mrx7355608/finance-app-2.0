@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Modal, View, ScrollView, Text, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "../animal-records/styles";
 import { IExpense } from "@/utils/types";
@@ -21,6 +28,7 @@ export default function EditExpenseModal({
   const [item, setItem] = useState(expenseToEdit.name);
   const [amount, setAmount] = useState(String(expenseToEdit.amount));
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
     if (item.trim() === "" || amount.trim() === "") {
@@ -29,8 +37,16 @@ export default function EditExpenseModal({
       return;
     }
 
-    await onEdit(expenseToEdit.id, item, Number(amount));
-    onClose();
+    try {
+      setIsLoading(true);
+      await onEdit(expenseToEdit.id, item, Number(amount));
+      onClose();
+    } catch (err) {
+      setError("Failed to update expense");
+      setTimeout(() => setError(""), 5000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -47,7 +63,7 @@ export default function EditExpenseModal({
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Edit Expense</Text>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity onPress={onClose} disabled={isLoading}>
               <Feather name="x" size={24} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
@@ -73,15 +89,21 @@ export default function EditExpenseModal({
             <TouchableOpacity
               style={styles.modalCancelButton}
               onPress={onClose}
+              disabled={isLoading}
             >
               <Text style={styles.modalCancelButtonText}>Cancel</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.modalSaveButton}
+              style={[styles.modalSaveButton, isLoading && { opacity: 0.7 }]}
               onPress={handleSave}
+              disabled={isLoading}
             >
-              <Text style={styles.modalSaveButtonText}>Save</Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#121212" />
+              ) : (
+                <Text style={styles.modalSaveButtonText}>Save</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

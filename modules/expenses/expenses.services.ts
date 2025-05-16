@@ -10,14 +10,14 @@ export const createExpenseService = (expensesRepo: IExpenseRepo) => {
   const createExpense = async (expenseInput: IExpenseInput) => {
     const validated = expenseInputSchema.parse(expenseInput);
     const result = await expensesRepo.insertExpense(validated);
-    return result;
+    return result.data;
   };
 
   /**
    * Get all expenses
    */
   const getAllExpenses = async () => {
-    return expensesRepo.findAllExpenses();
+    return (await expensesRepo.findAllExpenses()).data;
   };
 
   /**
@@ -37,7 +37,7 @@ export const createExpenseService = (expensesRepo: IExpenseRepo) => {
    */
   const getExpensesByRecordId = async (recordId: number) => {
     const expenses = await expensesRepo.findExpensesByRecordId(recordId);
-    return expenses.data;
+    return expenses;
   };
 
   /**
@@ -56,7 +56,8 @@ export const createExpenseService = (expensesRepo: IExpenseRepo) => {
       throw new Error("Expense amount must be greater than zero.");
     }
 
-    return expensesRepo.editExpense(id, newAmount, newName);
+    const result = await expensesRepo.editExpense(id, newAmount, newName);
+    return result.data;
   };
 
   /**

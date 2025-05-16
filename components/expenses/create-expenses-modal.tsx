@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "../animal-records/styles";
@@ -18,7 +19,7 @@ interface Props {
   visible: boolean;
   recordId: number;
   onClose: () => void;
-  onCreate: (expense: IExpenseInput) => void;
+  onCreate: (expense: IExpenseInput) => Promise<void>;
 }
 
 export default function CreateExpenseModal({
@@ -30,20 +31,29 @@ export default function CreateExpenseModal({
   const [item, setItem] = useState("");
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (item.trim() === "" || amount.trim() === "") {
       setError("Please fill in all the fields");
       setTimeout(() => setError(""), 5000);
       return;
     }
 
-    // Reset form
-    setItem("");
-    setAmount("");
-    setError("");
-    onCreate({ name: item, amount: Number(amount), recordId });
-    onClose();
+    try {
+      setIsLoading(true);
+      await onCreate({ name: item, amount: Number(amount), recordId });
+      // Reset form
+      setItem("");
+      setAmount("");
+      setError("");
+      onClose();
+    } catch (err) {
+      setError("Failed to create expense");
+      setTimeout(() => setError(""), 5000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,7 +70,7 @@ export default function CreateExpenseModal({
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Add Expense</Text>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity onPress={onClose} disabled={isLoading}>
               <Feather name="x" size={24} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
@@ -87,15 +97,21 @@ export default function CreateExpenseModal({
             <TouchableOpacity
               style={styles.modalCancelButton}
               onPress={onClose}
+              disabled={isLoading}
             >
               <Text style={styles.modalCancelButtonText}>Cancel</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.modalSaveButton}
+              style={[styles.modalSaveButton, isLoading && { opacity: 0.7 }]}
               onPress={handleSave}
+              disabled={isLoading}
             >
-              <Text style={styles.modalSaveButtonText}>Add</Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#121212" />
+              ) : (
+                <Text style={styles.modalSaveButtonText}>Add</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

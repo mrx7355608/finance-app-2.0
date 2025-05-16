@@ -18,8 +18,7 @@ export const createExpensesRepo = (db: SupabaseClient) => {
       name,
       amount,
       recordId,
-      createdAt: new Date().toISOString(),
-    });
+    }).select().single();
 
     return result;
   };
@@ -43,7 +42,7 @@ export const createExpensesRepo = (db: SupabaseClient) => {
    * Get all expenses related to a specific recordId
    */
   const findExpensesByRecordId = async (recordId: number) => {
-    return await db.from("expenses").select().eq("recordId", recordId);
+    return (await db.from("expenses").select().eq("recordId", recordId)).data;
   };
 
   /**
@@ -59,9 +58,8 @@ export const createExpensesRepo = (db: SupabaseClient) => {
       .update({
         amount: newAmount,
         name: newName,
-        updatedAt: new Date().toISOString(),
       })
-      .eq("id", id);
+      .eq("id", id).select().single()
 
     return result;
   };
