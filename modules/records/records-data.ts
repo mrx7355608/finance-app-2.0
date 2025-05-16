@@ -31,7 +31,6 @@ export const createRecordsRepo = (db: SupabaseClient) => {
       name,
       bought_price,
       sold_price,
-      createdAt: new Date().toISOString(),
     });
 
     return record.data;

@@ -29,5 +29,6 @@ export const uploadImagesToCloudinary = async (imageURLs: string[]) => {
   };
 
   await Promise.all(imageURLs.map((link) => uploadImage(link, callback)));
+  console.log("uploadedURLs", uploadedURLs);
   return uploadedURLs;
 };

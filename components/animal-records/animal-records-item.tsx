@@ -1,6 +1,8 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { IRecordModel } from "@/utils/types";
+import { AdvancedImage } from "cloudinary-react-native";
+import { Cloudinary } from "@cloudinary/url-gen";
 
 interface Props {
   item: IRecordModel;
@@ -22,9 +24,18 @@ export default function AnimalRecordsItem({
     day: "numeric",
   });
 
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: "doemiclic",
+    },
+  });
+
   return (
     <View style={styles.card}>
-      <Image source={{ uri: item.images[0] }} style={styles.image} />
+      <Image
+        src={item.images[0].replace("https", "http")}
+        style={styles.image}
+      />
       <View style={styles.cardContent}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.date}>Created on {formattedDate}</Text>

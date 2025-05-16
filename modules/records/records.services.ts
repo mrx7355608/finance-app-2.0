@@ -13,6 +13,8 @@ export const createRecordsService = (recordsRepo: IRecordsRepo) => {
     const validated = recordSchema.parse(input);
 
     const uploadedLinks = await uploadImagesToCloudinary(input.images);
+    console.log("Images upload");
+
     const result = await insert({
       images: uploadedLinks,
       name: validated.name,

@@ -36,7 +36,8 @@ export const createExpenseService = (expensesRepo: IExpenseRepo) => {
    * Get all expenses by recordId
    */
   const getExpensesByRecordId = async (recordId: number) => {
-    return expensesRepo.findExpensesByRecordId(recordId);
+    const expenses = await expensesRepo.findExpensesByRecordId(recordId);
+    return expenses.data;
   };
 
   /**

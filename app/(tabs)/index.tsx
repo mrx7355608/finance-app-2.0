@@ -7,6 +7,7 @@ import {
   Text,
   View,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import AnimalRecordsItem from "@/components/animal-records/animal-records-item";
 import DeleteConfirmationModal from "@/components/animal-records/delete-confirmation-modal";
@@ -19,8 +20,9 @@ import useRealtimePosts from "@/hooks/useRealtimeData";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 export default function AnimalRecordsHome() {
+  const [isLoading, setIsLoading] = useState(true);
   const [recordToDelete, setRecordToDelete] = useState<IRecordModel | null>(
-    null,
+    null
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -32,32 +34,44 @@ export default function AnimalRecordsHome() {
   const callback = (
     payload: RealtimePostgresChangesPayload<{
       [key: string]: any;
-    }>,
+    }>
   ) => {
     if (payload.eventType === "INSERT") {
-      console.log(payload.new);
       setRecords((prev) => [...prev, payload.new as IRecordModel]);
       setData((prev) => [...prev, payload.new as IRecordModel]);
+    }
+    if (payload.eventType === "DELETE") {
+      setRecords((prev) => prev.filter((rec) => rec.id !== payload.old.id));
+      setData((prev) => prev.filter((rec) => rec.id !== payload.old.id));
+    }
+    if (payload.eventType === "UPDATE") {
+      const newData = payload.new as IRecordModel;
+      setRecords((prev) =>
+        prev.map((rec) => (rec.id === newData.id ? newData : rec))
+      );
+      setData((prev) =>
+        prev.map((rec) => (rec.id === newData.id ? newData : rec))
+      );
     }
   };
 
   useRealtimePosts(callback);
 
   useEffect(() => {
-    console.log("fetching...");
     db.from("records")
       .select()
       .then((res) => {
         setData(res.data!);
         setRecords(res.data!);
+        setIsLoading(false);
       });
   }, []);
 
   useEffect(() => {
     setData(
       records.filter((rec) =>
-        rec.name.toLowerCase().includes(search.toLowerCase()),
-      ),
+        rec.name.toLowerCase().includes(search.toLowerCase())
+      )
     );
   }, [search]);
 
@@ -81,6 +95,14 @@ export default function AnimalRecordsHome() {
     setIsModalVisible(true);
     setRecordToDelete(item);
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFFFFF" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -154,5 +176,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginLeft: 12,
     marginRight: 12,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -28,9 +28,9 @@ const ViewRecordScreen = () => {
       try {
         const { data } = await recordsService.getRecordById(Number(id));
         const expensesList = await expenseService.getExpensesByRecordId(
-          data.id,
+          data.id
         );
-        setExpenses(expensesList);
+        setExpenses(expensesList || []);
         setRecord(data as IRecordModel);
       } catch (err) {
         console.log((err as Error).message);
@@ -54,7 +54,7 @@ const ViewRecordScreen = () => {
 
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + expense.amount,
-    0,
+    0
   );
 
   // Calculate profit/loss
@@ -83,7 +83,7 @@ const ViewRecordScreen = () => {
                 return (
                   <>
                     <Image
-                      source={{ uri: item }}
+                      source={{ uri: item.replace("https", "http") }}
                       style={styles2.imagePreview}
                     />
                   </>

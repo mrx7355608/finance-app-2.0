@@ -47,12 +47,15 @@ export default function AddRecordForm() {
         err.errors.forEach((e) => {
           setErrors((prev) => ({ ...prev, [e.path[0]]: e.message }));
         });
+        return;
       }
+      alert("Unable to create record");
+      console.log(err);
     } finally {
       setTimeout(
         () =>
           setErrors({ name: "", images: "", bought_price: "", sold_price: "" }),
-        8000,
+        8000
       );
       setLoading(false);
     }

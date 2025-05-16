@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { IRecordModel } from "@/utils/types";
@@ -16,11 +16,20 @@ export default function DeleteConfirmationModal({
   onClose,
 }: Props) {
   const { recordsService } = useServices();
+  const [isLoading, setIsLoading] = useState(false);
   if (!record) return null;
 
   const deleteRecordWithExpenses = async () => {
-    await recordsService.deleteRecord(record.id);
-    onClose();
+    setIsLoading(true);
+    try {
+      await recordsService.deleteRecord(record.id);
+      onClose();
+    } catch (err) {
+      console.log(err);
+      alert("Unable to delete record");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -54,7 +63,9 @@ export default function DeleteConfirmationModal({
               onPress={deleteRecordWithExpenses}
             >
               <Feather name="trash-2" size={16} color="#FFFFFF" />
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <Text style={styles.deleteButtonText}>
+                {isLoading ? "Deleting..." : "Delete"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

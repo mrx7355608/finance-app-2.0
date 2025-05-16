@@ -41,9 +41,9 @@ export default function EditRecord() {
       try {
         const { data } = await recordsService.getRecordById(Number(id));
         const expensesList = await expenseService.getExpensesByRecordId(
-          data.id,
+          data.id
         );
-        setExpenses(expensesList);
+        setExpenses(expensesList || []);
         setRecord(data);
         setImages(data.images as string[]);
       } catch (err) {
