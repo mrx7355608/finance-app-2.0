@@ -37,8 +37,18 @@ export default function AnimalRecordsHome() {
     }>
   ) => {
     if (payload.eventType === "INSERT") {
-      setRecords((prev) => [...prev, payload.new as IRecordModel]);
-      setData((prev) => [...prev, payload.new as IRecordModel]);
+      setRecords((prev) =>
+        [...prev, payload.new as IRecordModel].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+      );
+      setData((prev) =>
+        [...prev, payload.new as IRecordModel].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+      );
     }
     if (payload.eventType === "DELETE") {
       setRecords((prev) => prev.filter((rec) => rec.id !== payload.old.id));
@@ -60,6 +70,7 @@ export default function AnimalRecordsHome() {
   useEffect(() => {
     db.from("records")
       .select()
+      .order("created_at", { ascending: false })
       .then((res) => {
         setData(res.data!);
         setRecords(res.data!);
@@ -69,9 +80,12 @@ export default function AnimalRecordsHome() {
 
   useEffect(() => {
     setData(
-      records.filter((rec) =>
-        rec.name.toLowerCase().includes(search.toLowerCase())
-      )
+      records
+        .filter((rec) => rec.name.toLowerCase().includes(search.toLowerCase()))
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
     );
   }, [search]);
 

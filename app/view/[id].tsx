@@ -8,6 +8,7 @@ import {
   StatusBar,
   ScrollView,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { IExpense, IRecordModel } from "@/utils/types";
@@ -17,7 +18,7 @@ import styles2 from "@/components/animal-records/styles";
 
 const ViewRecordScreen = () => {
   const { id } = useLocalSearchParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [expenses, setExpenses] = useState<IExpense[]>([]);
   const [record, setRecord] = useState<IRecordModel | null>(null);
   const { recordsService, expenseService } = useServices();
@@ -44,12 +45,33 @@ const ViewRecordScreen = () => {
 
   // Show loading state
   if (loading) {
-    return <Text>Loading...</Text>;
+    return (
+      <>
+        <Stack.Screen options={{ title: "View" }} />
+        <SafeAreaView style={styles.container}>
+          <StatusBar barStyle="light-content" backgroundColor="#121212" />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#FFFFFF" />
+            <Text style={styles.loadingText}>Loading record details...</Text>
+          </View>
+        </SafeAreaView>
+      </>
+    );
   }
 
   // Show a not found message
   if (!record) {
-    return <Text>Record not found</Text>;
+    return (
+      <>
+        <Stack.Screen options={{ title: "View" }} />
+        <SafeAreaView style={styles.container}>
+          <StatusBar barStyle="light-content" backgroundColor="#121212" />
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Record not found</Text>
+          </View>
+        </SafeAreaView>
+      </>
+    );
   }
 
   const totalExpenses = expenses.reduce(
@@ -64,7 +86,7 @@ const ViewRecordScreen = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: "View Record" }} />
+      <Stack.Screen options={{ title: "View" }} />
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
@@ -345,6 +367,17 @@ const styles = StyleSheet.create({
   },
   lossText: {
     color: "#FF5252",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
+  loadingText: {
+    color: "#FFFFFF",
+    marginTop: 12,
+    fontSize: 16,
   },
 });
 

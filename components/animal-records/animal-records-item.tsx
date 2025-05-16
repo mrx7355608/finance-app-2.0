@@ -1,7 +1,6 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { IRecordModel } from "@/utils/types";
-import { AdvancedImage } from "cloudinary-react-native";
 import { Cloudinary } from "@cloudinary/url-gen";
 
 interface Props {
@@ -18,7 +17,7 @@ export default function AnimalRecordsItem({
   onDelete,
 }: Props) {
   // Format the date to be more readable
-  const formattedDate = new Date(item.createdAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(item.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -38,7 +37,7 @@ export default function AnimalRecordsItem({
       />
       <View style={styles.cardContent}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.date}>Created on {formattedDate}</Text>
+        <Text style={styles.date}>{formattedDate}</Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity

@@ -64,7 +64,7 @@ export const createRecordsRepo = (db: SupabaseClient) => {
   const editRecord = async (recordId: number, newData: IRecordInput) => {
     const result = await db
       .from("records")
-      .update({ ...newData, updatedAt: new Date().toISOString() })
+      .update(newData)
       .eq("id", recordId);
 
     return result.data;

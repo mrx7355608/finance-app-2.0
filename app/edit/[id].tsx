@@ -6,10 +6,12 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
+  ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import ExpensesList from "@/components/expenses/expenses-list";
 import CreateExpenseModal from "@/components/expenses/create-expenses-modal";
-import styles from "@/components/animal-records/styles";
+import baseStyles from "@/components/animal-records/styles";
 import { IExpense, IExpenseInput, IRecordModel } from "@/utils/types";
 import { Feather } from "@expo/vector-icons";
 import ImagePickerComponent from "@/components/animal-records/image-picker";
@@ -19,10 +21,40 @@ import SubmitButton from "@/components/ui/submit-button";
 import Input from "@/components/ui/input";
 import { ZodError } from "zod";
 
+const styles = {
+  ...baseStyles,
+  loadingContainer: StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#121212",
+    },
+    text: {
+      color: "#FFFFFF",
+      marginTop: 12,
+      fontSize: 16,
+    },
+  }).container,
+  loadingText: StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#121212",
+    },
+    text: {
+      color: "#FFFFFF",
+      marginTop: 12,
+      fontSize: 16,
+    },
+  }).text,
+};
+
 export default function EditRecord() {
   const { id } = useLocalSearchParams();
   const { recordsService, expenseService } = useServices();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [expenses, setExpenses] = useState<IExpense[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [record, setRecord] = useState<IRecordModel | null>(null);
@@ -58,12 +90,33 @@ export default function EditRecord() {
 
   // Show loading state
   if (loading) {
-    return <Text>Loading...</Text>;
+    return (
+      <>
+        <Stack.Screen options={{ title: "Edit" }} />
+        <SafeAreaView style={styles.container}>
+          <StatusBar barStyle="light-content" backgroundColor="#121212" />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#FFFFFF" />
+            <Text style={styles.loadingText}>Loading record details...</Text>
+          </View>
+        </SafeAreaView>
+      </>
+    );
   }
 
   // Show a not found message
   if (!record) {
-    return <Text>Record not found</Text>;
+    return (
+      <>
+        <Stack.Screen options={{ title: "Edit" }} />
+        <SafeAreaView style={styles.container}>
+          <StatusBar barStyle="light-content" backgroundColor="#121212" />
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Record not found</Text>
+          </View>
+        </SafeAreaView>
+      </>
+    );
   }
 
   const handleAddExpense = async (newExpense: IExpenseInput) => {
@@ -81,13 +134,13 @@ export default function EditRecord() {
     soldPrice: (newSoldPrice: string) => {
       setRecord((prev) => {
         if (!prev) return prev;
-        return { ...prev, sold_price: String(newSoldPrice) };
+        return { ...prev, sold_price: newSoldPrice };
       });
     },
     boughtPrice: (newBoughtPrice: string) => {
       setRecord((prev) => {
         if (!prev) return prev;
-        return { ...prev, bought_price: String(newBoughtPrice) };
+        return { ...prev, bought_price: newBoughtPrice };
       });
     },
   };
@@ -102,6 +155,8 @@ export default function EditRecord() {
       });
       router.navigate("/");
     } catch (err) {
+      console.log((err as Error).message);
+      alert("Unable to update record");
       if (err instanceof ZodError) {
         err.errors.forEach((e) => {
           setErrors((prev) => ({ ...prev, [e.path[0]]: e.message }));
@@ -112,7 +167,7 @@ export default function EditRecord() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Edit Record" }} />
+      <Stack.Screen options={{ title: "Edit" }} />
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
