@@ -118,7 +118,7 @@ const ViewRecordScreen = () => {
           <View style={styles.header}>
             <Text style={styles.headerTitle}>{record.name}</Text>
             <Text style={styles.infoLabel}>
-              {new Date(record.createdAt).toDateString()}
+              {new Date(record.created_at).toDateString()}
             </Text>
           </View>
 
@@ -147,7 +147,7 @@ const ViewRecordScreen = () => {
                 <View>
                   <Text style={styles.expenseName}>{item.name}</Text>
                   <Text style={styles.expenseDate}>
-                    {new Date(item.createdAt).toDateString()}
+                    {new Date(item.created_at).toDateString()}
                   </Text>
                 </View>
                 <Text style={styles.expenseAmount}>

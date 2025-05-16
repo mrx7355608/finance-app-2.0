@@ -1,10 +1,27 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
-import styles from "../animal-records/styles";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+import baseStyles from "../animal-records/styles";
 import { Feather } from "@expo/vector-icons";
 import { IExpense } from "@/utils/types";
 import { useServices } from "@/context/services.context";
 import EditExpenseModal from "./edit-expense-modal";
+
+const styles = StyleSheet.create({
+  ...baseStyles,
+  loadingButton: {
+    width: 18,
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center" as const,
+  },
+});
 
 export default function ExpensesList({
   expenses,
@@ -15,11 +32,19 @@ export default function ExpensesList({
 }) {
   const [expenseToEdit, setExpenseToEdit] = useState<IExpense | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const { expenseService } = useServices();
 
   const deleteExpense = async (id: number) => {
-    await expenseService.deleteExpense(id);
-    setExpenses((prev) => prev.filter((e) => e.id !== id));
+    try {
+      setDeletingId(id);
+      await expenseService.deleteExpense(id);
+      setExpenses((prev) => prev.filter((e) => e.id !== id));
+    } catch (err) {
+      console.error("Failed to delete expense:", err);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const showEditExpenseModal = (id: number) => {
@@ -61,14 +86,26 @@ export default function ExpensesList({
               <TouchableOpacity
                 style={styles.expenseButton}
                 onPress={() => showEditExpenseModal(item.id)}
+                disabled={deletingId === item.id}
               >
-                <Feather name="edit-2" size={18} color="#64ffda" />
+                <Feather
+                  name="edit-2"
+                  size={18}
+                  color={deletingId === item.id ? "#666666" : "#64ffda"}
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.expenseButton}
                 onPress={() => deleteExpense(item.id)}
+                disabled={deletingId === item.id}
               >
-                <Feather name="trash-2" size={18} color="#FF5252" />
+                {deletingId === item.id ? (
+                  <View style={styles.loadingButton}>
+                    <ActivityIndicator size="small" color="#FF5252" />
+                  </View>
+                ) : (
+                  <Feather name="trash-2" size={18} color="#FF5252" />
+                )}
               </TouchableOpacity>
             </View>
           </View>
